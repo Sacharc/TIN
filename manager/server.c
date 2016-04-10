@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
-
+#include <unistd.h>
 
 
 int main()
@@ -46,29 +44,28 @@ struct message
 /* LISTEN */
 	listen(sock,5);
 /* ACCEPT */
-	while(1)
-	{
-	int end=0;
+	while(1) {
+		int end=0;
 		mysock = accept(sock, (struct sockaddr *) 0, 0);
-	do {
-		if(mysock ==-1)
-			perror("accept failed");
-		else
-		{
-			if((rval=recv(mysock, msg, sizeof(struct message), 0)) <0)
-				perror("reading stream message error");
-			else if(rval==0)
-			{
-				printf("Ending connection\n");
-				end=1;
-			}
+		do {
+			if(mysock ==-1)
+				perror("accept failed");
 			else
-				printf("MSG: %ld , %hd ,\n", msg->id, msg->msg_type);
-			printf("Got the message (rval=%d)\n",rval);
-		}
+			{
+				if((rval=recv(mysock, msg, sizeof(struct message), 0)) <0)
+					perror("reading stream message error");
+				else if(rval==0)
+				{
+					printf("Ending connection\n");
+					end=1;
+				}
+				else
+					printf("MSG: %ld , %hd ,\n", msg->id, msg->msg_type);
+				printf("Got the message (rval=%d)\n",rval);
+			}
 
 
-	} while(!end);
+		} while(!end);
 //	close(sock);
 	}
 	close(sock);	
