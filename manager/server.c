@@ -3,36 +3,95 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
+#include <pthread.h>
+#include <semaphore.h>
+#define RAPORT_INTERVAL 5
+#define CHECK_STATUS_INTERVAL 1
 
+enum msg_type {REPORT, ALARM};
 
-int main()
-{
+// global variables - detector specific
+int detector_id;
+int safe_level;
+int water_level;
 
 struct message
 {
 	long id;
-	unsigned short msg_type;
+	enum msg_type type;
+	int value;
+	int value2;
 };
-/* Variables */
+int detector_report(int sock)
+{
+	struct message *msg;
+	int err;
+	msg = malloc(sizeof(struct message));
+	msg->id = detector_id;
+	msg->type = REPORT;
+	msg->value = water_level;
+	msg->value2 = safe_level;
+	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
+		if( err < 0)
+	{
+		perror("Sending raport failed");
+		return -1;
+	}
+	printf("Raport sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
+	 msg->id, msg->type, msg->value, msg->value2);
+	 free(msg);
+	return 0;
+}
+int detector_alarm(int sock)
+{
+	struct message *msg;
+	int err;
+	msg = malloc(sizeof(struct message));
+	msg->id = detector_id;
+	msg->type = ALARM;
+	msg->value = water_level;
+	msg->value2 = safe_level;
+	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
+		if( err < 0)
+	{
+		perror("Sending raport failed");
+		return -1;
+	}
+	printf("Alarm sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
+	 msg->id, msg->type, msg->value, msg->value2);
+	 free(msg);
+	return 0;
+}
 
+int main(int argc, char *argv[])
+{
+	if(argc<3)
+	{
+		printf("Usage:\n ./DETECTOR <DETECTOR_ID> <LISTEN_PORT>\n");
+		return 0;
+	}
+/* Variables */
 	int sock;
 	struct sockaddr_in server;
 	int mysock;
 	int rval;
-	struct message *msg;
-	msg = malloc(sizeof(struct message));
-	//memset(msg, 0, sizeof(struct message));
+
+	srand(time(NULL));
+	detector_id = atoi (argv[1]);
+	water_level = 2000 + rand() % 2000;
+	safe_level = 3000;
+
 /* Create socket*/
 	sock=socket(AF_INET, SOCK_STREAM, 0);
 	if(sock<0)
 	{
-		perror("Failer to create socket");
+		perror("Failed to create socket");
 		exit(1);
 	}
 
 	server.sin_family = AF_INET;
 	server.sin_addr.s_addr = INADDR_ANY;
-	server.sin_port=5000;
+	server.sin_port = atoi(argv[2]);
 
 /* CALL BIND */
 	if(bind(sock, (struct sockaddr*) &server, sizeof(server)))
@@ -46,28 +105,34 @@ struct message
 /* ACCEPT */
 	while(1) {
 		int end=0;
+		int iter =0;
+		printf("waiting for connection from manager...\n");
 		mysock = accept(sock, (struct sockaddr *) 0, 0);
+		/* REPORT AND ALARM UNTIL MANAGER DISCONNECTS */
 		do {
-			if(mysock ==-1)
+			if(mysock < 1)
 				perror("accept failed");
 			else
 			{
-				if((rval=recv(mysock, msg, sizeof(struct message), 0)) <0)
-					perror("reading stream message error");
-				else if(rval==0)
-				{
-					printf("Ending connection\n");
-					end=1;
-				}
-				else
-					printf("MSG: %ld , %hd ,\n", msg->id, msg->msg_type);
-				printf("Got the message (rval=%d)\n",rval);
+				water_level = 2000 + rand() % 2000;
+				if(iter % RAPORT_INTERVAL == 0)
+					if (detector_report(mysock) == -1)
+					{
+						end = 1;
+						break;
+					}
+				if(water_level >= safe_level)
+					if (detector_alarm(mysock) == -1)
+					{
+						end = 1;
+						break;
+					}
+				sleep(CHECK_STATUS_INTERVAL);
 			}
-
-
+			iter++;
 		} while(!end);
-//	close(sock);
 	}
-	close(sock);	
+	close(sock);
+
 	return 0;
 }
