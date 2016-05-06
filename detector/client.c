@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <unistd.h>
 
+#define DET_NMB 3
 enum msg_type {REPORT, ALARM};
 struct message
 {
@@ -25,69 +26,92 @@ int main(int argc, char *argv[])
 /* Variables */
 	int pressed;
 
-	int sock;
+	fd_set readfds;
+	FD_ZERO (&readfds);
+	int sock[2];
 	struct sockaddr_in server;
 	struct hostent *hp;
 	struct message msg1 = {15,REPORT,35,0};
 	struct message *msg;
 	msg = malloc(sizeof(struct message));
+
+	struct sockaddr_in servers [2];
+
 /* Create socket*/
-	printf("Client started\n");
-	sock=socket(AF_INET, SOCK_STREAM, 0);
-	if(sock<0)
+	int i=0;
+	for(i=0; i<DET_NMB; i++)
 	{
-		perror("Failed to create socket");
-		close(sock);
-		exit(1);
-	}
-	printf("Socket created.\n");
-	server.sin_family = AF_INET;
-	hp= gethostbyname (argv[1]);
-	if(hp == 0)
-	{
-		perror("GetHostName failed");
-		close(sock);
-		exit(1);
-	}
-	printf("Hostname received.\n");
+		printf("Client started\n");
+		sock[i]=socket(AF_INET, SOCK_STREAM, 0);
+		if(sock[i]<0)
+		{
+			perror("Failed to create socket");
+			close(sock[i]);
+			exit(1);
+		}
+		printf("Socket created.\n");
+		servers[i].sin_family = AF_INET;
+		hp= gethostbyname (argv[1+i*2]);
+		if(hp == 0)
+		{
+			perror("GetHostName failed");
+			close(sock[i]);
+			exit(1);
+		}
+		printf("Hostname received.\n");
 
-	memcpy(&server.sin_addr, hp->h_addr, hp->h_length);
-	server.sin_port = atoi(argv[2]);
+		memcpy(&servers[i].sin_addr, hp->h_addr, hp->h_length);
+		servers[i].sin_port = atoi(argv[2+i*2]);
 
 
-	if(connect(sock, (struct sockaddr*) &server, sizeof (server)) < 0)
-	{
-		perror("Connect failed");
-		close(sock);
-		exit(1);
+		if(connect(sock[i], (struct sockaddr*) &servers[i], sizeof (servers[i])) < 0)
+		{
+			perror("Connect failed");
+			close(sock[i]);
+			exit(1);
+		}
+		printf("Successfully connected to: %s\n",hp->h_name);
 	}
-	printf("Successfully connected to: %s\n",hp->h_name);
 	int end = 0;
 	int rval;
 	while(end != 1)
 	{
-		if((rval=recv(sock, msg, sizeof(struct message), 0)) <0)
-			perror("reading stream message error");
-		else if(rval==0)
+		int j=0;
+		for(j=0; j< DET_NMB; j++)
 		{
-			printf("Ending connection\n");
-			end=1;
+			FD_SET(sock[j],&readfds);
 		}
-		else
-			switch(msg->type)
+		i = 0;
+		select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
+		for (i=0; i<DET_NMB; i++)
+		{
+			if(FD_ISSET(sock[i],&readfds))
 			{
-				case REPORT:
-					printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
-				break;
-				case ALARM:
-					printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
-				break;
-				deafult:
-					printf("Unknown message from detector %ld\n", msg->id);
-				break;
+				if((rval=recv(sock[i], msg, sizeof(struct message), 0)) <0)
+					perror("reading stream message error");
+				else if(rval==0)
+				{
+					printf("Ending connection\n");
+					end=1;
+				}
+				else
+					switch(msg->type)
+					{
+						case REPORT:
+							printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
+						break;
+						case ALARM:
+							printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
+						break;
+						deafult:
+							printf("Unknown message from detector %ld\n", msg->id);
+						break;
+					}
 			}
+		}
 	}
-	close(sock);
+	close(sock[0]);
+	close(sock[1]);
 	free(msg);
 	return 0;
 }
