@@ -10,7 +10,7 @@
 #define RAPORT_INTERVAL 5
 #define CHECK_STATUS_INTERVAL 1
 
-// global variables - manager specific
+// global variables - detector specific
 int detector_id;
 int safe_level;
 int water_level;
@@ -31,8 +31,8 @@ int detector_report(int sock)
 		return -1;
 	}
 	printf("Raport sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
-	 msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-	 free(msg);
+	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
+	free(msg);
 	return 0;
 }
 int detector_alarm(int sock)
@@ -51,8 +51,8 @@ int detector_alarm(int sock)
 		return -1;
 	}
 	printf("Alarm sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
-	 msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-	 free(msg);
+	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
+	free(msg);
 	return 0;
 }
 
@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 	while(1) {
 		int end=0;
 		int iter =0;
-		printf("waiting for connection from detector...\n");
+		printf("waiting for connection from manager...\n");
 		mysock = accept(sock, (struct sockaddr *) 0, 0);
 		/* REPORT AND ALARM UNTIL MANAGER DISCONNECTS */
 		do {
