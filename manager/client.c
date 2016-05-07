@@ -99,7 +99,7 @@ int main(int argc, char *argv[])
 							printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->currentResistance, msg->typicalResistance);
 						break;
 						deafult:
-							printf("Unknown message from detector %ld\n", msg->id);
+							printf("Unknown message from manager %ld\n", msg->id);
 						break;
 					}
 			}
