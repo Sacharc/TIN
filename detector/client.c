@@ -6,16 +6,11 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include "../common/messageType.h"
+#include "../common/message.h"
 
 #define DET_NMB 3
-enum msg_type {REPORT, ALARM};
-struct message
-{
-	long id;
-	enum msg_type type;
-	int value;
-	int value2;
-};
+
 int main(int argc, char *argv[])
 {
 	if(argc<3)
@@ -95,13 +90,13 @@ int main(int argc, char *argv[])
 					end=1;
 				}
 				else
-					switch(msg->type)
+					switch(msg->msg_type)
 					{
 						case REPORT:
-							printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
+							printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->currentResistance, msg->typicalResistance);
 						break;
 						case ALARM:
-							printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->value, msg->value2);
+							printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->currentResistance, msg->typicalResistance);
 						break;
 						deafult:
 							printf("Unknown message from detector %ld\n", msg->id);

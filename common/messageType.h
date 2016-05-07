@@ -2,9 +2,10 @@
 #define TEST_MESSAGETYPE_H
 
 enum messageType {
+    REPORT,
+    ALARM,
     init = 0,
     callAlarm,
-    cancelAlarm,
     getCurrentValue,
     setAlarmValue
 };

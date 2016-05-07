@@ -5,32 +5,25 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include "../common/messageType.h"
+#include "../common/message.h"
 #define RAPORT_INTERVAL 5
 #define CHECK_STATUS_INTERVAL 1
-
-enum msg_type {REPORT, ALARM};
 
 // global variables - detector specific
 int detector_id;
 int safe_level;
 int water_level;
 
-struct message
-{
-	long id;
-	enum msg_type type;
-	int value;
-	int value2;
-};
 int detector_report(int sock)
 {
 	struct message *msg;
 	int err;
 	msg = malloc(sizeof(struct message));
 	msg->id = detector_id;
-	msg->type = REPORT;
-	msg->value = water_level;
-	msg->value2 = safe_level;
+	msg->msg_type = REPORT;
+	msg->currentResistance = water_level;
+	msg->typicalResistance = safe_level;
 	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
 		if( err < 0)
 	{
@@ -38,7 +31,7 @@ int detector_report(int sock)
 		return -1;
 	}
 	printf("Raport sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
-	 msg->id, msg->type, msg->value, msg->value2);
+	 msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
 	 free(msg);
 	return 0;
 }
@@ -48,9 +41,9 @@ int detector_alarm(int sock)
 	int err;
 	msg = malloc(sizeof(struct message));
 	msg->id = detector_id;
-	msg->type = ALARM;
-	msg->value = water_level;
-	msg->value2 = safe_level;
+	msg->msg_type = ALARM;
+	msg->currentResistance = water_level;
+	msg->typicalResistance = safe_level;
 	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
 		if( err < 0)
 	{
@@ -58,7 +51,7 @@ int detector_alarm(int sock)
 		return -1;
 	}
 	printf("Alarm sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
-	 msg->id, msg->type, msg->value, msg->value2);
+	 msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
 	 free(msg);
 	return 0;
 }
