@@ -6,13 +6,16 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <iostream>
 #include "../common/messageType.h"
 #include "../common/message.h"
+#include "DetectorHistory.h"
 
 #define DET_NMB 3
 
 int main(int argc, char *argv[])
 {
+    DetectorHistory det;
 	if(argc<3)
 	{
 		printf("Usage:\n ./MANAGER <DETECTOR_IP> <DETECTOR_PORT>\n");
@@ -28,7 +31,7 @@ int main(int argc, char *argv[])
 	struct hostent *hp;
 	struct message msg1 = {15,REPORT,35,0};
 	struct message *msg;
-	msg = malloc(sizeof(struct message));
+	msg = (struct message*)malloc(sizeof(struct message));
 
 	struct sockaddr_in servers [2];
 
@@ -89,19 +92,29 @@ int main(int argc, char *argv[])
 					printf("Ending connection\n");
 					end=1;
 				}
-				else
-					switch(msg->msg_type)
-					{
-						case REPORT:
-							printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->currentResistance, msg->typicalResistance);
-						break;
-						case ALARM:
-							printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->currentResistance, msg->typicalResistance);
-						break;
-						deafult:
-							printf("Unknown message from detector %ld\n", msg->id);
-						break;
-					}
+				else {
+                    time_t  timev;
+                    time(&timev);
+                    det.add(msg->id, new HistoryRecord(*msg, timev));
+                    switch (msg->msg_type) {
+                        case REPORT:
+                            printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->currentResistance,
+                                   msg->typicalResistance);
+                            break;
+                        case ALARM:
+                            printf("Detector %ld ALARMED: waterlevel: %d/%d\n", msg->id, msg->currentResistance,
+                                   msg->typicalResistance);
+                            break;
+                        deafult:
+                            printf("Unknown message from detector %ld\n", msg->id);
+                            break;
+                    }
+                    auto tab = det.getRecords(msg->id);
+                    for(int i = 0; i < tab->size(); i++) {
+                        std::cout<<(*tab)[i]->getTime()<<" "<<(*tab)[i]->getMessage().id << " " << (*tab)[i]->getMessage().currentResistance << std::endl;
+                    }
+
+                }
 			}
 		}
 	}
