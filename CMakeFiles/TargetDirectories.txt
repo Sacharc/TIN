@@ -1,2 +1,0 @@
-/home/jonek/repos/TIN/CMakeFiles/DETECTOR.dir
-/home/jonek/repos/TIN/CMakeFiles/MANAGER.dir

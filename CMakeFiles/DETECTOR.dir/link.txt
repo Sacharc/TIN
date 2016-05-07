@@ -1,1 +1,0 @@
-/usr/bin/cc     CMakeFiles/DETECTOR.dir/manager/server.c.o  -o DETECTOR -rdynamic 
