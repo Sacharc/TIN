@@ -13,3 +13,11 @@ struct message& HistoryRecord::getMessage() {
 time_t HistoryRecord::getTime() {
     return time;
 }
+
+int HistoryRecord::getCurrentResistance() {
+    return getMessage().currentResistance;
+}
+
+int HistoryRecord::getTypicalResistance() {
+    return getMessage().typicalResistance;
+}

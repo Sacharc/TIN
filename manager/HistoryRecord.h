@@ -18,6 +18,8 @@ public:
 
     struct message& getMessage();
     time_t getTime();
+    int getCurrentResistance();
+    int getTypicalResistance();
 };
 
 
