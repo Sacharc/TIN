@@ -20,6 +20,22 @@ function tin_proto.dissector (buf, pkt, root)
     else
         if (reportType == 1) then
             subtree:add(buf(8,4), "ALARM. Message type: " .. buf(8,4):le_uint())
+        else
+            if (reportType == 2) then
+                subtree:add(buf(8,4), "INIT. Message type: " .. buf(8,4):le_uint())
+            else
+                if (reportType == 3) then
+                    subtree:add(buf(8,4), "CALL ALARM. Message type: " .. buf(8,4):le_uint())
+                else
+                    if (reportType == 4) then
+                        subtree:add(buf(8,4), "GET CURRENT VALUE. Message type: " .. buf(8,4):le_uint())
+                    else
+                        if (reportType == 4) then
+                            subtree:add(buf(8,4), "SET ALARM VALUE. Message type: " .. buf(8,4):le_uint())
+                        end
+                    end
+                end
+            end
         end
     end
     subtree:add(buf(12,4), "Water level: " .. buf(12,4):le_uint())

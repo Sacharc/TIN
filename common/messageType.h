@@ -4,7 +4,7 @@
 enum messageType {
     REPORT,
     ALARM,
-    init = 0,
+    init,
     callAlarm,
     getCurrentValue,
     setAlarmValue
