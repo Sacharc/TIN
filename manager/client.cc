@@ -15,7 +15,7 @@
 
 int main(int argc, char *argv[])
 {
-    DetectorHistory det;
+//    DetectorHistory det;
 	if(argc<3)
 	{
 		printf("Usage:\n ./MANAGER <DETECTOR_IP> <DETECTOR_PORT>\n");
@@ -93,9 +93,6 @@ int main(int argc, char *argv[])
 					end=1;
 				}
 				else {
-                    time_t  timev;
-                    time(&timev);
-                    det.add(msg->id, new HistoryRecord(*msg, timev));
                     switch (msg->msg_type) {
                         case REPORT:
                             printf("Detector %ld reported: waterlevel: %d/%d\n", msg->id, msg->currentResistance,
@@ -109,10 +106,13 @@ int main(int argc, char *argv[])
                             printf("Unknown message from detector %ld\n", msg->id);
                             break;
                     }
-                    auto tab = det.getRecords(msg->id);
-                    for(int i = 0; i < tab->size(); i++) {
-                        std::cout<<(*tab)[i]->getTime()<<" "<<(*tab)[i]->getMessage().id << " " << (*tab)[i]->getMessage().currentResistance << std::endl;
-                    }
+//                    time_t  timev;
+//                    time(&timev);
+//                    det.add(msg->id, new HistoryRecord(*msg, timev));
+//                    auto tab = det.getRecords(msg->id);
+//                    for(int i = 0; i < tab->size(); i++) {
+//                        std::cout<<(*tab)[i]->getTime()<<" "<<(*tab)[i]->getMessage().id << " " << (*tab)[i]->getMessage().currentResistance << std::endl;
+//                    }
 
                 }
 			}
