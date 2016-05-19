@@ -19,7 +19,7 @@ int detector_report(int sock)
 {
 	struct message *msg;
 	int err;
-	msg = malloc(sizeof(struct message));
+	msg =(struct message*)  malloc(sizeof(struct message));
 	msg->id = detector_id;
 	msg->msg_type = REPORT;
 	msg->currentResistance = water_level;
@@ -39,7 +39,7 @@ int detector_alarm(int sock)
 {
 	struct message *msg;
 	int err;
-	msg = malloc(sizeof(struct message));
+	msg = (struct message*) malloc(sizeof(struct message));
 	msg->id = detector_id;
 	msg->msg_type = ALARM;
 	msg->currentResistance = water_level;

@@ -3,7 +3,7 @@ project(TIN)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(DETECTOR_SOURCE_FILES detector/server.c common/message.h common/messageType.h)
+set(DETECTOR_SOURCE_FILES detector/server.cpp common/message.h common/messageType.h)
 set(MANAGER_SOURCE_FILES manager/client.cc common/message.h common/messageType.h manager/DetectorHistory.cpp manager/DetectorHistory.h manager/HistoryRecord.cpp manager/HistoryRecord.h)
 
 add_executable(DETECTOR ${DETECTOR_SOURCE_FILES})
