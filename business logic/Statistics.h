@@ -3,14 +3,16 @@
 //
 // Class - statistical methods.
 
-#include "../manager/HistoryRecord.h"
-#include<vector>
 #ifndef TIN_STATISTICS_H
 #define TIN_STATISTICS_H
+
+#include "../manager/HistoryRecord.h"
+#include<vector>
 
 class Statistics{
 
     public:
+
     double countAverageResistanceOneDetector(std::vector<HistoryRecord>* History);
 };
 

@@ -26,21 +26,21 @@ LoggerERura::~LoggerERura() {
 }
 
 // Overload opertor "<<" with addnotation
-friend LoggerERura &operator << (LoggerERura &logger, const eRuraLogType logType) {
+friend LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType) {
 
     switch (logType) {
-        case LoggerERura::eRuraLogType::LOGGER_ERROR:
+        case ERuraLogType :: LOGGER_ERROR:
             logger.myFile << "[ERROR]: ";
 
-        case LoggerERura::eRuraLogType::LOGGER_WARNING:
+        case ERuraLogType :: LOGGER_WARNING:
             logger.myFile << "[WARNING]: ";
             break;
 
-        case LoggerERura::eRuraLogType::LOGGER_DEBUG:
+        case ERuraLogType :: LOGGER_DEBUG:
             logger.myFile << "[DEBUG]: ";
             break;
 
-        case LoggerERura::eRuraLogType::LOGGER_INFO:
+        case ERuraLogType :: LOGGER_INFO:
             logger.myFile << "[INFO]: ";
             break;
 

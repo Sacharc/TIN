@@ -6,16 +6,16 @@
 #ifndef TIN_LOGGERERURA_H
 #define TIN_LOGGERERURA_H
 
+#include "../logger/ERuraLogType.h"
 
 class LoggerERura {
 
     public:
 
-        enum eRuraLogType { LOGGER_ERROR, LOGGER_WARNING, LOGGER_INFO, LOGGER_DEBUG};
         LoggerERura();
         ~LoggerERura();
-        friend LoggerERura &operator << (FileLogger &logger, const eRuraLogType logType);
-        friend LoggerERura &operator << (FileLogger &logger, std::string);
+        friend LoggerERura &operator << (LoggerERura &logger, const eRuraLogType logType);
+        friend LoggerERura &operator << (LoggerERura &logger, std::string);
 
     private:
         //Name of file
