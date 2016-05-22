@@ -14,7 +14,7 @@ class LoggerERura {
         enum eRuraLogType { LOGGER_ERROR, LOGGER_WARNING, LOGGER_INFO, LOGGER_DEBUG};
         LoggerERura();
         ~LoggerERura();
-        friend LoggerERura &operator << (FileLogger &logger, const e_logType l_type);
+        friend LoggerERura &operator << (FileLogger &logger, const eRuraLogType logType);
         friend LoggerERura &operator << (FileLogger &logger, std::string);
 
     private:
