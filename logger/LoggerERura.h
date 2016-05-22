@@ -7,20 +7,26 @@
 #define TIN_LOGGERERURA_H
 
 #include "../logger/ERuraLogType.h"
+#include <string>
+#include <iostream>
+#include <fstream>
+
+///using namespace std;
 
 class LoggerERura {
 
     public:
-
+        std::ofstream logFile;
         LoggerERura();
         ~LoggerERura();
-        friend LoggerERura &operator << (LoggerERura &logger, const eRuraLogType logType);
-        friend LoggerERura &operator << (LoggerERura &logger, std::string);
+        friend LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType);
+        friend LoggerERura &operator << (LoggerERura &logger, std::string text);
 
     private:
         //Name of file
-        const string loggerFileName = "eRuraLog.txt";
-        std::ofstream  logFile;
+        std::string loggerFileName = "eRuraLog.txt";
+
+
 };
 
 

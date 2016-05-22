@@ -12,3 +12,4 @@ enum class ERuraLogType{
     LOGGER_DEBUG
 };
 
+#endif //TIN_ERURALOGTYPE_H
