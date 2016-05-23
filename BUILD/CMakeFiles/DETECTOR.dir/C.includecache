@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/jdudziak/TIN/common/message.h
+
+/home/jdudziak/TIN/common/messageType.h
+
+/home/jdudziak/TIN/detector/server.c
+stdio.h
+-
+stdlib.h
+-
+sys/socket.h
+-
+netinet/in.h
+-
+unistd.h
+-
+pthread.h
+-
+semaphore.h
+-
+../common/messageType.h
+/home/jdudziak/TIN/common/messageType.h
+../common/message.h
+/home/jdudziak/TIN/common/message.h
+

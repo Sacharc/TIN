@@ -1,0 +1,1 @@
+/usr/bin/c++    -std=c++11    CMakeFiles/MANAGER.dir/manager/client.cc.o CMakeFiles/MANAGER.dir/manager/DetectorHistory.cpp.o CMakeFiles/MANAGER.dir/manager/HistoryRecord.cpp.o  -o MANAGER -rdynamic 

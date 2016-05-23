@@ -1,0 +1,2 @@
+/home/jdudziak/TIN/BUILD/CMakeFiles/DETECTOR.dir
+/home/jdudziak/TIN/BUILD/CMakeFiles/MANAGER.dir
