@@ -7,7 +7,6 @@
 #define TIN_STATISTICS_H
 
 #include "../manager/HistoryRecord.h"
-#include "../manager/HistoryRecord.cpp"
 #include<vector>
 
 class Statistics{
