@@ -1,1 +1,0 @@
-/usr/bin/c++    -std=c++11    CMakeFiles/DETECTOR.dir/detector/server.cpp.o CMakeFiles/DETECTOR.dir/logger/LoggerERura.cpp.o CMakeFiles/DETECTOR.dir/businessLogic/Statistics.cpp.o  -o DETECTOR -rdynamic 
