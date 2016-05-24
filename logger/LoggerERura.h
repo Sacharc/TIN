@@ -10,6 +10,7 @@
 #include <string>
 #include <iostream>
 #include <fstream>
+#include <time.h>
 
 ///using namespace std;
 
@@ -20,12 +21,11 @@ class LoggerERura {
         LoggerERura();
         ~LoggerERura();
         friend LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType);
-        friend LoggerERura &operator << (LoggerERura &logger, std::string text);
+        friend LoggerERura &operator << (LoggerERura &logger, const std::string text);
 
     private:
         //Name of file
         std::string loggerFileName = "eRuraLog.txt";
-
 
 };
 

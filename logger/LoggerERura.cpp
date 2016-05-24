@@ -28,20 +28,23 @@ LoggerERura::~LoggerERura() {
 // Overload opertor "<<" with addnotation
 LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType) {
 
+    time_t now;
+    time(&now);
+
     switch (logType) {
         case ERuraLogType :: LOGGER_ERROR:
-            logger.logFile << "[ERROR]: ";
+            logger.logFile << ctime(&now) << "[ERROR]: ";
 
         case ERuraLogType :: LOGGER_WARNING:
-            logger.logFile << "[WARNING]: ";
+            logger.logFile << ctime(&now)  << "[WARNING]: ";
             break;
 
         case ERuraLogType :: LOGGER_DEBUG:
-            logger.logFile << "[DEBUG]: ";
+            logger.logFile << ctime(&now) << "[DEBUG]: ";
             break;
 
         case ERuraLogType :: LOGGER_INFO:
-            logger.logFile << "[INFO]: ";
+            logger.logFile << ctime(&now)  << "[INFO]: ";
             break;
 
         default:
@@ -54,7 +57,7 @@ LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType) {
 }
 
 //Overload operator "<<" without addnotation
-LoggerERura &operator << (LoggerERura &logger, std::string text) {
+LoggerERura &operator << (LoggerERura &logger, const std::string text) {
 
     logger.logFile << text << std::endl;
     return logger;
