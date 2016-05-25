@@ -20,7 +20,15 @@ char webpage[] =
         "Content-Type: text/html; charset=UTF-8\r\n\r\n"
         "<!DOCTYPE HTML>\r\n"
         "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
-        "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center></body></html>\r\n";
+        "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
+            "<table>\r\n"
+            "<tr>\r\n"
+            "<td>PIERWSZY</td>\r\n"
+            "<td>DRUGI</td>\r\n"
+            "<td>TRZECI</td>\r\n"
+            "<td>CZWARTY</td>\r\n""</tr>\r\n"
+                "</table>\r\n"
+        "</body></html>\r\n";
 
 int main(){
     struct sockaddr_in server_addr, client_addr;
