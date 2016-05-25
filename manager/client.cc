@@ -10,6 +10,8 @@
 #include "../common/messageType.h"
 #include "../common/message.h"
 #include "MessageHandler.h"
+#include "../http_module/HttpHandler.h"
+
 
 #define DET_NMB 3
 
@@ -30,6 +32,15 @@ int main(int argc, char *argv[])
 
     MessageHandler handler;
 	struct sockaddr_in servers [2];
+
+/* Create http handler thread */
+	pthread_t id;
+	int err;
+	err = pthread_create(&(id), NULL, &httpHandlerStart, NULL);
+	if (err != 0)
+		perror("Can't create http thread\n");
+	else
+		printf("Http thread created successfully\n");
 
 /* Create socket*/
 	int i=0;
