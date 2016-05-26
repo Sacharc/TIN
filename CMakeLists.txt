@@ -26,7 +26,7 @@ set(MANAGER_SOURCE_FILES
         businessLogic/Statistics.h
         http_module/HttpHandler.cpp
         http_module/HttpHandler.h
-        businessLogic/tempClass.cpp)
+        )
 
 
 add_executable(DETECTOR ${DETECTOR_SOURCE_FILES})
