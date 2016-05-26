@@ -33,12 +33,10 @@ int main(int argc, char *argv[])
 	msg = (struct message*)malloc(sizeof(struct message));
 
     MessageHandler handler;
-<<<<<<< HEAD
+
 	struct sockaddr_in servers [20];
 	int ip[] = {1,0,168,192};
 	char buf[16];
-=======
-	struct sockaddr_in servers [2];
 
 /* Create http handler thread */
 	pthread_t id;
@@ -49,7 +47,6 @@ int main(int argc, char *argv[])
 	else
 		printf("Http thread created successfully\n");
 
->>>>>>> afc8401e2bd3062159f37136462fe6286c9987f5
 /* Create socket*/
 int servcount = 0;
 	int i=0;
