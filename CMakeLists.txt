@@ -4,7 +4,11 @@ project(TIN)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -pthread")
 
 
-set(DETECTOR_SOURCE_FILES detector/server.cpp common/message.h common/messageType.h)
+set(DETECTOR_SOURCE_FILES
+        detector/server.cpp
+        common/message.h
+        common/messageType.h)
+
 set(MANAGER_SOURCE_FILES
         manager/client.cc
         common/message.h
