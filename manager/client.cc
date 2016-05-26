@@ -35,7 +35,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in servers [2];
 
 /* Create http handler thread */
-	std::thread httpHandler(httpHandlerStart, handler.getHistory().getRecords(1000));
+	std::thread httpHandler(httpHandlerStart, &handler);
 
 /* Create socket*/
 	int i=0;

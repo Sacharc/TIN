@@ -15,23 +15,9 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string>
+#include <ctime>
 
-void httpHandlerStart(std::vector<HistoryRecord*>* history) {
-    std::string webpageStr = "HTTP/1.1 200 OK\r\n"
-            "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-            "<!DOCTYPE HTML>\r\n"
-            "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
-            "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
-            "<table>\r\n"
-            "<tr>\r\n"
-            "<td>PIERWSZY</td>\r\n"
-            "<td>DRUGI</td>\r\n"
-            "<td>TRZECI</td>\r\n"
-            "<td>CZWARTY</td>\r\n"
-            "</tr>\r\n"
-            "</table>\r\n"
-            "</body></html>\r\n";
-
+void httpHandlerStart(MessageHandler* messageHandler) {
     struct sockaddr_in server_addr, client_addr;
     socklen_t sin_len = sizeof(client_addr);
     int fd_server, fd_client;
@@ -72,25 +58,26 @@ void httpHandlerStart(std::vector<HistoryRecord*>* history) {
 
         printf("Got client connect...\n");
 
-        if(!fork()){
-            close(fd_server);
-            memset(buf,0,2048);
-            read(fd_client, buf, 2047);
+//            close(fd_server);
+        memset(buf,0,2048);
+        read(fd_client, buf, 2047);
 
-            printf("%s\n", buf);
+        printf("%s\n", buf);
 
-            const char* webpage = buildHtmlString(history);
+        const char* webpage = buildHtmlString(messageHandler->getHistory().getRecords(1000));
 
-            printf("%s\n", webpage);
-            write(fd_client, webpage, sizeof(webpage) - 1);
-            close(fd_client);
-            printf("Closing");
-            exit(0);
+//        printf("%s", webpage);
+
+        if(webpage != NULL){
+            write(fd_client, webpage, strlen(webpage) - 1);
         }
+            //close(fd_client);
+            printf("Closing\n");
         close(fd_client);
     }
-
 }
+
+
 
 const char* buildHtmlString(std::vector<HistoryRecord*>* history){
 
@@ -98,10 +85,22 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
             "Content-Type: text/html; charset=UTF-8\r\n\r\n"
             "<!DOCTYPE HTML>\r\n"
             "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
-            "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
-            "<table>\r\n";
+            "<body><center><h1>TIN - DETECTORS AND MANAGER</h1></center>\r\n"
+            "<table>\r\n"
+            "<tr>\r\n"
+            "<td>CZAS</td>\r\n"
+            "<td>OBECNY POMIAR</td>\r\n"
+            "<td>LIMIT</td>\r\n"
+            "</tr>\r\n"
+            "<tr>\r\n"
+            "<td>---------------------------------------</td>\r\n"
+            "<td>---------------------------------------</td>\r\n"
+            "<td>---------------------------------------</td>\r\n"
+            "</tr>\r\n";
 
-    for (int i = 0; i < history->size(); ++i){
+    size_t limit = history->size();
+    for (int i = 0; i < limit; ++i){
+        char buff[80];
         std::string tr = "<tr>";
         std::string tre = "</tr>";
         std::string tde = "</td>";
@@ -109,7 +108,9 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
         std::string endln = "\r\n";
 
 
-        std::string time = std::to_string(history->at(i)->getTime());
+        time_t time1 = history->at(i)->getTime();
+        strftime(buff, 80, "%Y-%m-%d %H:%M:%S", localtime(&time1));
+        std::string time(buff);
         std::string currentResistence = std::to_string(history->at(i)->getCurrentResistance());
         std::string typicalResistance = std::to_string(history->at(i)->getTypicalResistance());
 
