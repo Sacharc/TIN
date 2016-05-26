@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
     MessageHandler handler;
 
 	struct sockaddr_in servers [256];
-	int ip[] = {1,0,168,192};
+	int ip[] = {1,2,0,10};
 	char buf[16];
 
 /* Create http handler thread */
@@ -82,10 +82,10 @@ int main(int argc, char *argv[])
 //		printf("Hostname received.\n");
 //		memcpy(&servers[servcount].sin_addr, hp->h_addr, hp->h_length);
 
-        servers[servcount].sin_port = htons(2000);
+//        servers[servcount].sin_port = htons(2000);
         servers[servcount].sin_addr.s_addr = inet_addr(buf);
 
-        servers[servcount].sin_port = 4000;
+        servers[servcount].sin_port = htons(4000);
 		printf("Address: %s\n",inet_ntoa(servers[servcount].sin_addr));
 
 //		if(connect(sock[servcount], (struct sockaddr*) &servers[servcount], sizeof (servers[servcount])) < 0)
