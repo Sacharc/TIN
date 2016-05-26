@@ -4,6 +4,7 @@
 enum messageType {
     REPORT,
     ALARM,
+    INFINITY_RESISTANCE,
     init,
     callAlarm,
     getCurrentValue,
