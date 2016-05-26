@@ -24,3 +24,5 @@ void MessageHandler::handle(struct message *msg) {
     history.add(msg->id, new HistoryRecord(*msg, timev));
 
 }
+
+

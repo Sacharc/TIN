@@ -7,6 +7,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <iostream>
+#include <thread>
 #include "../common/messageType.h"
 #include "../common/message.h"
 #include "MessageHandler.h"
@@ -34,13 +35,7 @@ int main(int argc, char *argv[])
 	struct sockaddr_in servers [2];
 
 /* Create http handler thread */
-	pthread_t id;
-	int err;
-	err = pthread_create(&(id), NULL, &httpHandlerStart, NULL);
-	if (err != 0)
-		perror("Can't create http thread\n");
-	else
-		printf("Http thread created successfully\n");
+	std::thread httpHandler(httpHandlerStart, handler.getHistory().getRecords(1000));
 
 /* Create socket*/
 	int i=0;

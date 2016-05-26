@@ -5,6 +5,9 @@
 #ifndef TIN_HTTPHANDLER_H
 #define TIN_HTTPHANDLER_H
 
-void* httpHandlerStart(void *arg);
+#include "../manager/DetectorHistory.h"
+
+void httpHandlerStart(std::vector<HistoryRecord*>*);
+const char* buildHtmlString(std::vector<HistoryRecord*>* history);
 
 #endif //TIN_HTTPHANDLER_H

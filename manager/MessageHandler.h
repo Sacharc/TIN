@@ -18,6 +18,10 @@ private:
     LoggerERura logger;
 public:
     void handle(struct message* msg);
+
+    DetectorHistory &getHistory() {
+        return history;
+    }
 };
 
 

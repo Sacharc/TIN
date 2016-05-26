@@ -14,22 +14,23 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <string>
 
-void* httpHandlerStart(void *arg) {
-    char webpage[] =
-            "HTTP/1.1 200 OK\r\n"
-                    "Content-Type: text/html; charset=UTF-8\r\n\r\n"
-                    "<!DOCTYPE HTML>\r\n"
-                    "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
-                    "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
-                    "<table>\r\n"
-                    "<tr>\r\n"
-                    "<td>PIERWSZY</td>\r\n"
-                    "<td>DRUGI</td>\r\n"
-                    "<td>TRZECI</td>\r\n"
-                    "<td>CZWARTY</td>\r\n""</tr>\r\n"
-                    "</table>\r\n"
-                    "</body></html>\r\n";
+void httpHandlerStart(std::vector<HistoryRecord*>* history) {
+    std::string webpageStr = "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+            "<!DOCTYPE HTML>\r\n"
+            "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
+            "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
+            "<table>\r\n"
+            "<tr>\r\n"
+            "<td>PIERWSZY</td>\r\n"
+            "<td>DRUGI</td>\r\n"
+            "<td>TRZECI</td>\r\n"
+            "<td>CZWARTY</td>\r\n"
+            "</tr>\r\n"
+            "</table>\r\n"
+            "</body></html>\r\n";
 
     struct sockaddr_in server_addr, client_addr;
     socklen_t sin_len = sizeof(client_addr);
@@ -78,6 +79,9 @@ void* httpHandlerStart(void *arg) {
 
             printf("%s\n", buf);
 
+            const char* webpage = buildHtmlString(history);
+
+            printf("%s\n", webpage);
             write(fd_client, webpage, sizeof(webpage) - 1);
             close(fd_client);
             printf("Closing");
@@ -86,7 +90,41 @@ void* httpHandlerStart(void *arg) {
         close(fd_client);
     }
 
-    return 0;
+}
+
+const char* buildHtmlString(std::vector<HistoryRecord*>* history){
+
+    std::string webpageStr = "HTTP/1.1 200 OK\r\n"
+            "Content-Type: text/html; charset=UTF-8\r\n\r\n"
+            "<!DOCTYPE HTML>\r\n"
+            "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
+            "<body><center><h1>HELLO TIN - DETECTORS AND MANAGER</h1></center>\r\n"
+            "<table>\r\n";
+
+    for (int i = 0; i < history->size(); ++i){
+        std::string tr = "<tr>";
+        std::string tre = "</tr>";
+        std::string tde = "</td>";
+        std::string td = "<td>";
+        std::string endln = "\r\n";
+
+
+        std::string time = std::to_string(history->at(i)->getTime());
+        std::string currentResistence = std::to_string(history->at(i)->getCurrentResistance());
+        std::string typicalResistance = std::to_string(history->at(i)->getTypicalResistance());
+
+        webpageStr +=
+                tr + endln +
+                     td + time + tde + endln +
+                     td + currentResistence + tde + endln +
+                     td + typicalResistance + tde + endln +
+                tre + endln;
+    }
+
+    webpageStr += "</table>\r\n"
+            "</body></html>\r\n";
+
+    return webpageStr.c_str();
 
 }
 
