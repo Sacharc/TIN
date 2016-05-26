@@ -21,3 +21,7 @@ int HistoryRecord::getCurrentResistance() {
 int HistoryRecord::getTypicalResistance() {
     return getMessage().typicalResistance;
 }
+
+int HistoryRecord::getMessageType() {
+    return getMessage().msg_type;
+}

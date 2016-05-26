@@ -20,6 +20,7 @@ public:
     time_t getTime();
     int getCurrentResistance();
     int getTypicalResistance();
+    int getMessageType();
 };
 
 
