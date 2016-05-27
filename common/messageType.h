@@ -5,10 +5,8 @@ enum messageType {
     REPORT,
     ALARM,
     INFINITY_RESISTANCE,
-    init,
-    callAlarm,
-    getCurrentValue,
-    setAlarmValue
+    CHANGE_TYPICAL_RESISTANCE,
+    CHECK_STATE
 };
 
 #endif //TEST_MESSAGETYPE_H

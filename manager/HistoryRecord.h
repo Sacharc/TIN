@@ -15,7 +15,6 @@ private:
 
 public:
     HistoryRecord(struct message &msg, time_t time);
-
     struct message& getMessage();
     time_t getTime();
     int getCurrentResistance();
