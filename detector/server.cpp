@@ -67,7 +67,6 @@ int main(int argc, char *argv[])
 	int sock;
 	struct sockaddr_in server;
 	int mysock;
-	int rval;
 
 	srand(time(NULL));
 	detector_id = atoi (argv[1]);
