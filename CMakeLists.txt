@@ -33,9 +33,9 @@ set(MANAGER_SOURCE_FILES
 add_executable(DETECTOR ${DETECTOR_SOURCE_FILES})
 add_executable(MANAGER ${MANAGER_SOURCE_FILES})
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
+#find_package(GTest REQUIRED)
+#include_directories(${GTEST_INCLUDE_DIRS})
+#
 #set(TEST_FILES tests/BusinnesLogicTests.cpp
 #        common/message.h
 #        common/messageType.h
