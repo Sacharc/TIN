@@ -1,8 +1,6 @@
 //
 // Created by jdudziak on 5/8/16.
 //
-
-
 #include "Statistics.h"
 
 double Statistics::countAverageCurrentResistance(std::vector<HistoryRecord*>* History) {
@@ -51,9 +49,9 @@ double Statistics::countAverageDifferenceResistance(std::vector<HistoryRecord*>*
 
 int Statistics::countDetectorWithAlarm(std::vector<HistoryRecord*>* History) {
     int counter=0;
-
     for(auto it = History->begin(); it != History->end(); ++it) {
-        if((*it)->getMessageType() != INFINITY_RESISTANCE && (*it)->getTypicalResistance() > (*it)->getCurrentResistance()){
+
+        if((*it)->getMessageType() != INFINITY_RESISTANCE && (*it)->getTypicalResistance() > (*it)->getCurrentResistance()) {
             counter++;
         }
     }
