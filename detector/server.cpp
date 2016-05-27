@@ -15,13 +15,13 @@ int detector_id;
 int safe_level;
 int water_level;
 
-int detector_report(int sock)
+int detector_send(int sock, messageType type)
 {
 	struct message *msg;
 	int err;
 	msg =(struct message*)  malloc(sizeof(struct message));
 	msg->id = detector_id;
-	msg->msg_type = REPORT;
+	msg->msg_type = type;
 	msg->currentResistance = water_level;
 	msg->typicalResistance = safe_level;
 	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
@@ -30,27 +30,9 @@ int detector_report(int sock)
 		perror("Sending raport failed");
 		return -1;
 	}
-	printf("Raport sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
-	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-	free(msg);
-	return 0;
-}
-int detector_alarm(int sock)
-{
-	struct message *msg;
-	int err;
-	msg = (struct message*) malloc(sizeof(struct message));
-	msg->id = detector_id;
-	msg->msg_type = ALARM;
-	msg->currentResistance = water_level;
-	msg->typicalResistance = safe_level;
-	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
-		if( err < 0)
-	{
-		perror("Sending raport failed");
-		return -1;
-	}
-	printf("Alarm sent: id: %ld, type: %d, water level: %d, safe_level: %d\n",
+	const char* name = type == ALARM ? "Alarm" : "Raport";
+
+	printf("%s sent: id: %ld, type: %d, water level: %d, safe_level: %d\n", name,
 	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
 	free(msg);
 	return 0;
@@ -108,13 +90,13 @@ int main(int argc, char *argv[])
 			{
 				water_level = 2000 + rand() % 2000;
 				if(iter % RAPORT_INTERVAL == 0)
-					if (detector_report(mysock) == -1)
+					if (detector_send(mysock, REPORT) == -1)
 					{
 						end = 1;
 						break;
 					}
 				if(water_level >= safe_level)
-					if (detector_alarm(mysock) == -1)
+					if (detector_send(mysock, ALARM) == -1)
 					{
 						end = 1;
 						break;
