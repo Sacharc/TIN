@@ -26,7 +26,7 @@ void httpHandlerStart(MessageHandler* messageHandler) {
 
     fd_server = socket(AF_INET, SOCK_STREAM, 0);
     if(fd_server < 0){
-        perror("socket");
+        perror("HTTP socket error");
         exit(1);
     }
 
@@ -37,13 +37,13 @@ void httpHandlerStart(MessageHandler* messageHandler) {
     server_addr.sin_port = htons(8040);
 
     if(bind(fd_server, (struct sockaddr*) &server_addr, sizeof(server_addr)) == -1){
-        perror("bind");
+        perror("HTTP bind error");
         close(fd_server);
         exit(1);
     }
 
     if(listen(fd_server, 10) == -1){
-        perror("listen");
+        perror("HTTP listen error");
         close(fd_server);
         exit(1);
     }
@@ -52,27 +52,20 @@ void httpHandlerStart(MessageHandler* messageHandler) {
         fd_client = accept(fd_server, (struct sockaddr*) &client_addr, &sin_len);
 
         if(fd_client == -1){
-            perror("Connection failed.....\n");
+            perror("HTTP Connection failed.....\n");
             continue;
         }
 
-        printf("Got client connect...\n");
+        printf("Got HTTP client connect...\n");
 
-//            close(fd_server);
         memset(buf,0,2048);
         read(fd_client, buf, 2047);
 
-        printf("%s\n", buf);
-
-        const char* webpage = buildHtmlString(messageHandler->getHistory().getRecords(1000));
-
-//        printf("%s", webpage);
+        const char* webpage = buildHtmlString(messageHandler->getHistory().getAllRecords());
 
         if(webpage != NULL){
             write(fd_client, webpage, strlen(webpage) - 1);
         }
-            //close(fd_client);
-            printf("Closing\n");
         close(fd_client);
     }
 }
@@ -89,10 +82,14 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
             "<table>\r\n"
             "<tr>\r\n"
             "<td>CZAS</td>\r\n"
+            "<td>ID</td>\r\n"
+            "<td>TYP WIADOMOŚCI</td>\r\n"
             "<td>OBECNY POMIAR</td>\r\n"
             "<td>LIMIT</td>\r\n"
             "</tr>\r\n"
             "<tr>\r\n"
+            "<td>---------------------------------------</td>\r\n"
+            "<td>---------------------------------------</td>\r\n"
             "<td>---------------------------------------</td>\r\n"
             "<td>---------------------------------------</td>\r\n"
             "<td>---------------------------------------</td>\r\n"
@@ -111,12 +108,16 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
         time_t time1 = history->at(i)->getTime();
         strftime(buff, 80, "%Y-%m-%d %H:%M:%S", localtime(&time1));
         std::string time(buff);
+        std::string id = std::to_string(history->at(i)->getMessage().id);
+        std::string type = messageTypeToString(history->at(i)->getMessageType());
         std::string currentResistence = std::to_string(history->at(i)->getCurrentResistance());
         std::string typicalResistance = std::to_string(history->at(i)->getTypicalResistance());
 
         webpageStr +=
                 tr + endln +
                      td + time + tde + endln +
+                     td + id + tde + endln +
+                     td + type + tde + endln +
                      td + currentResistence + tde + endln +
                      td + typicalResistance + tde + endln +
                 tre + endln;
