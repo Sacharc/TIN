@@ -99,7 +99,7 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
             "</tr>\r\n";
 
     size_t limit = history->size();
-    for (int i = 0; i < limit; ++i){
+    for (unsigned i = 0; i < limit; ++i){
         char buff[80];
         std::string tr = "<tr>";
         std::string tre = "</tr>";

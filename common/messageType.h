@@ -9,4 +9,6 @@ enum messageType {
     CHECK_STATE
 };
 
+const char* messageTypeToString(int type);
+
 #endif //TEST_MESSAGETYPE_H

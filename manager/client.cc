@@ -16,31 +16,16 @@
 #include "../common/message.h"
 #include "MessageHandler.h"
 #include "../http_module/HttpHandler.h"
+#include "cli/CommandLineInterface.h"
 
 const char* eRuraSubnet = "192.168.1";
 const int eRuraPortNumber = 2137;
 
-int main(int argc, char *argv[])
-{
-    if(argc<1)
-    {
-        printf("Usage:\n ./MANAGER <DETECTOR_PORT>\n");
-        return 0;
-    }
-/* Variables */
-    fd_set readfds;
-    FD_ZERO (&readfds);
+std::vector<int> findDetectors() {
     struct hostent *hp;
-    struct message *msg;
     struct timeval times;
     times.tv_sec=0;
     times.tv_usec=10000;
-    msg = (struct message*)malloc(sizeof(struct message));
-
-    MessageHandler handler;
-
-/* Create http handler thread */
-//    std::thread httpHandler(httpHandlerStart, &handler);
 
     std::vector<int> sockets;
     //  TODO wydaje mi sie ze nie potrzebne do przetestowania
@@ -83,38 +68,62 @@ int main(int argc, char *argv[])
         sockets.push_back(soc);
         servs.push_back(serv);
     }
-    int end = 0;
-    int rval;
-    for(unsigned i = 0; i < sockets.size(); i++) {
-        FD_SET(sockets[i],&readfds);
-    }
-    sleep(1);
+    return sockets;
+}
 
-    while (end != 1) {
-        select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
-        for (unsigned i = 0; i < sockets.size(); i++)
-        {
-            if(sockets[i]!=-1 && FD_ISSET(sockets[i], &readfds))
-            {
-                if((rval=recv(sockets[i], msg, sizeof(struct message), 0)) <0) {
-                    perror("reading stream message error");
-                    FD_CLR(sockets[i],&readfds);
-                    sockets[i]=-1;
-                }
-                else if(rval==0)
-                {
-                    printf("Ending connection\n");
-                    end=1;
-                }
-                else {
-                    handler.handle(msg);
-                }
-            }
-        }
-    }
+void closeSocktes(const std::vector<int> &sockets) {
     for (unsigned i = 0; i < sockets.size(); i++) {
         close(sockets[i]);
     }
-    free(msg);
+}
+
+void checkAllDetectors(MessageHandler &handler, std::vector<int> &sockets, fd_set &readfds) {
+    struct message *msg = (struct message*)malloc(sizeof(struct message));
+    select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
+    for (unsigned i = 0; i < sockets.size(); i++) {
+        if(sockets[i] != -1 && FD_ISSET(sockets[i], &readfds)) {
+            int rval = recv(sockets[i], msg, sizeof(struct message), 0);
+            if (rval < 0 ) {
+                perror("reading stream message error");
+                FD_CLR(sockets[i],&readfds);
+                sockets[i]=-1;
+            } else if (rval==0) {
+                printf("Ending connection\n");
+            } else {
+                handler.handle(msg);
+            }
+        }
+    }
+}
+
+fd_set setFlags(const std::vector<int> &sockets) {
+    fd_set readfds;
+    FD_ZERO (&readfds);
+    int end = 0;
+    for(unsigned i = 0; i < sockets.size(); i++) {
+        FD_SET(sockets[i],&readfds);
+    }
+    return readfds;
+}
+
+int main(int argc, char *argv[])
+{
+    MessageHandler handler;
+
+    /* Create http handler thread */
+//    std::thread httpHandler(httpHandlerStart, &handler);
+    std::vector<int> sockets = findDetectors();
+
+    fd_set readfds = setFlags(sockets);
+    sleep(1);
+
+    for(int i = 0; i < 8; i++)
+        checkAllDetectors(handler, sockets, readfds);
+
+    CommandLineInterface cli(&handler.getHistory());
+    cli.mainMenu();
+
+    closeSocktes(sockets);
+
     return 0;
 }

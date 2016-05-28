@@ -36,3 +36,7 @@ std::vector<int> DetectorHistory::getDetectorIds() {
     }
     return vec;
 }
+
+void DetectorHistory::clearHistory() {
+    history.clear();
+}

@@ -17,6 +17,7 @@ public:
     std::vector<HistoryRecord*>* getRecords(int detectorId);
     std::vector<HistoryRecord*>* getAllRecords();
     std::vector<int> getDetectorIds();
+    void clearHistory();
 };
 
 #endif //TIN_DETECTORHISTORY_H

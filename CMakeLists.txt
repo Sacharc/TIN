@@ -9,12 +9,14 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -lpthread -lgtest")
 set(DETECTOR_SOURCE_FILES
         detector/server.cpp
         common/message.h
-        common/messageType.h)
+        common/messageType.h
+        common/messageType.cpp)
 
 set(MANAGER_SOURCE_FILES
         manager/client.cc
         common/message.h
         common/messageType.h
+        common/messageType.cpp
         manager/DetectorHistory.cpp
         manager/DetectorHistory.h
         manager/HistoryRecord.cpp
@@ -28,7 +30,8 @@ set(MANAGER_SOURCE_FILES
         businessLogic/Statistics.h
         http_module/HttpHandler.cpp
         http_module/HttpHandler.h
-        )
+        manager/cli/CommandLineInterface.cpp
+        manager/cli/CommandLineInterface.h)
 
 add_executable(DETECTOR ${DETECTOR_SOURCE_FILES})
 add_executable(MANAGER ${MANAGER_SOURCE_FILES})

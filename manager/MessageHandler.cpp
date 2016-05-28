@@ -25,4 +25,8 @@ void MessageHandler::handle(struct message *msg) {
 
 }
 
+DetectorHistory &MessageHandler::getHistory() {
+    return history;
+}
+
 
