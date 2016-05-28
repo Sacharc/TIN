@@ -10,7 +10,7 @@ LoggerERura::LoggerERura() {
     logFile.open (loggerFileName);
 
     if (logFile.is_open()) {
-        logFile << "ERura Log History" << std::endl << std::endl;
+        logFile << "ERura Log History" << std::endl;
     }
 
 }
@@ -19,7 +19,7 @@ LoggerERura::LoggerERura() {
 LoggerERura::~LoggerERura() {
 
     if (logFile.is_open()) {
-        logFile << std::endl << std::endl << "End of File" << std::endl;
+        logFile << std::endl << "End of File" << std::endl;
         logFile.close();
     }
 
@@ -33,22 +33,23 @@ LoggerERura &operator << (LoggerERura &logger, const ERuraLogType logType) {
 
     switch (logType) {
         case ERuraLogType :: LOGGER_ERROR:
-            logger.logFile << ctime(&now) << "[ERROR]: ";
+            logger.logFile << std::endl << ctime(&now) << "[ERROR]: " << std::endl;
+            break;
 
         case ERuraLogType :: LOGGER_WARNING:
-            logger.logFile << ctime(&now)  << "[WARNING]: ";
+            logger.logFile << std::endl << ctime(&now)  << "[WARNING]: " << std::endl;
             break;
 
         case ERuraLogType :: LOGGER_DEBUG:
-            logger.logFile << ctime(&now) << "[DEBUG]: ";
+            logger.logFile << std::endl << ctime(&now) << "[DEBUG]: " << std::endl;
             break;
 
         case ERuraLogType :: LOGGER_INFO:
-            logger.logFile << ctime(&now)  << "[INFO]: ";
+            logger.logFile << std::endl << ctime(&now)  << "[INFO]: " << std::endl;
             break;
 
         default:
-            std::cout << "WRONG OPTION in using class loggerERURA, this type of log does not exist" << std::endl;
+            std::cout << "WRONG OPTION in using class loggerERURA, this type of log does not exist" << std::endl ;
             break;
     }
 
