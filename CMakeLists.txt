@@ -4,7 +4,7 @@ project(TIN)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${Project_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -lpthread -lgtest")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread -lgtest")
 
 set(DETECTOR_SOURCE_FILES
         detector/server.cpp

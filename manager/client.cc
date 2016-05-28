@@ -106,24 +106,29 @@ fd_set setFlags(const std::vector<int> &sockets) {
     return readfds;
 }
 
+
+void detectorListener(MessageHandler *handler, std::vector<int> *sockets) {
+    fd_set readfds = setFlags(*sockets);
+    sleep(1);
+
+    while(1)
+        checkAllDetectors(*handler, *sockets, readfds);
+
+    closeSocktes(*sockets);
+}
+
 int main(int argc, char *argv[])
 {
     MessageHandler handler;
 
     /* Create http handler thread */
-//    std::thread httpHandler(httpHandlerStart, &handler);
+    std::thread httpHandler(httpHandlerStart, &handler);
     std::vector<int> sockets = findDetectors();
 
-    fd_set readfds = setFlags(sockets);
-    sleep(1);
-
-    for(int i = 0; i < 8; i++)
-        checkAllDetectors(handler, sockets, readfds);
+    std::thread loop(detectorListener, &handler, &sockets);
 
     CommandLineInterface cli(&handler.getHistory());
     cli.mainMenu();
-
-    closeSocktes(sockets);
 
     return 0;
 }

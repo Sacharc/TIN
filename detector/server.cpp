@@ -5,6 +5,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <semaphore.h>
+#include <fstream>
 #include "../common/messageType.h"
 #include "../common/message.h"
 #define RAPORT_INTERVAL 5
@@ -38,6 +39,11 @@ int detector_send(int sock, messageType type)
 	return 0;
 }
 
+void loadTypicalResistance() {
+    std::ifstream config("config.conf");
+    config>>safe_level;
+}
+
 int main(int argc, char *argv[])
 {
 	if(argc<3)
@@ -54,6 +60,8 @@ int main(int argc, char *argv[])
 	detector_id = atoi (argv[1]);
 	water_level = 2000 + rand() % 2000;
 	safe_level = 3000;
+
+    loadTypicalResistance();
 
 /* Create socket*/
 	sock=socket(AF_INET, SOCK_STREAM, 0);
