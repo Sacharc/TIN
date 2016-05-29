@@ -16,14 +16,11 @@
 #include <mutex>
 #include "../common/messageType.h"
 #include "../common/message.h"
+#include "../common/Constants.h"
 #include "MessageHandler.h"
 #include "../http_module/HttpHandler.h"
 #include "cli/CommandLineInterface.h"
 #define IpV6 0
-
-const char* eRuraSubnet = "192.168.1";
-const char* eRuraSubnetIpv6 = "fe80:0000:0000:0000:0000:0000:0000:0001";
-const int eRuraPortNumber = 2137;
 
 std::vector<int> sockets;
 
@@ -33,7 +30,7 @@ std::vector<int> findDetectors() {
     times.tv_sec=0;
     times.tv_usec=10000;
 
-    std::vector<int> sockets;
+    std::vector<int> socks;
     //  TODO wydaje mi sie ze nie potrzebne do przetestowania
     std::vector<struct sockaddr_in> servs;
 
@@ -71,10 +68,10 @@ std::vector<int> findDetectors() {
             continue;
         }
         printf("Successfully connected to: %s\n",hp->h_name);
-        sockets.push_back(soc);
+        socks.push_back(soc);
         servs.push_back(serv);
     }
-    return sockets;
+    return socks;
 }
 
 std::vector<int> findDetectorsIPv6() {
@@ -176,11 +173,11 @@ void scanNetwork(std::mutex* m) {
 }
 
 
-void detectorListener(MessageHandler *handler, std::mutex* m) {
+void detectorListener(MessageHandler *handler, std::mutex* m, CommandLineInterface *cli) {
     fd_set readfds = setFlags();
     sleep(1);
 
-    while(1) {
+    while(!cli->isEnd()) {
         m->lock();
         checkAllDetectors(*handler, readfds);
         m->unlock();
@@ -194,6 +191,7 @@ int main(int argc, char *argv[])
 {
     MessageHandler handler;
     std::mutex m;
+    CommandLineInterface cli(&handler.getHistory(), &m);
 
     /* Create http handler thread */
     std::thread httpHandler(httpHandlerStart, &handler);
@@ -202,10 +200,11 @@ int main(int argc, char *argv[])
     else
         sockets = findDetectorsIPv6();
 
-    std::thread loop(detectorListener, &handler, &m);
+    std::thread loop(detectorListener, &handler, &m, &cli);
 
-    CommandLineInterface cli(&handler.getHistory(), &m);
     cli.mainMenu();
+
+    loop.join();
 
     return 0;
 }

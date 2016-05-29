@@ -9,6 +9,8 @@
 
 void scanNetwork(std::mutex* m);
 
+CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist), m(mut), end(false) { }
+
 void CommandLineInterface::mainMenu() {
     std::vector<std::string> mainMenu;
     mainMenu.push_back("Wyswietl liste czujnikow");
@@ -46,6 +48,9 @@ void CommandLineInterface::mainMenu() {
                 findDetectors();
                 break;
             case 7:
+                m->lock();
+                end = true;
+                m->unlock();
                 return;
             default:
                 if (std::cin.fail()) {
@@ -85,8 +90,6 @@ void CommandLineInterface::displayHistory(bool alarmsOnly) {
     }
 }
 
-CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist), m(mut) { }
-
 void CommandLineInterface::findDetectors() {
     scanNetwork(m);
 }
@@ -101,4 +104,8 @@ void CommandLineInterface::chooseDetector() {
 
 void CommandLineInterface::changeTypicalResistance() {
 
+}
+
+bool CommandLineInterface::isEnd() {
+    return end;
 }

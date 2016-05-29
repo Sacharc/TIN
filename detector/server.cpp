@@ -8,6 +8,8 @@
 #include <fstream>
 #include "../common/messageType.h"
 #include "../common/message.h"
+#include "../common/Constants.h"
+
 #define RAPORT_INTERVAL 5
 #define CHECK_STATUS_INTERVAL 1
 #define IpV6 0
@@ -26,8 +28,7 @@ int detector_send(int sock, messageType type)
 	msg->currentResistance = water_level;
 	msg->typicalResistance = safe_level;
 	err = send(sock, msg, sizeof(struct message), MSG_NOSIGNAL);
-		if( err < 0)
-	{
+	if( err < 0) {
 		perror("Sending raport failed");
 		return -1;
 	}
@@ -46,9 +47,9 @@ void loadTypicalResistance() {
 
 int main(int argc, char *argv[])
 {
-	if(argc<3)
+	if(argc<2)
 	{
-		printf("Usage:\n ./DETECTOR <DETECTOR_ID> <LISTEN_PORT>\n");
+		printf("Usage:\n ./DETECTOR <DETECTOR_ID>\n");
 		return 0;
 	}
 /* Variables */
@@ -78,7 +79,7 @@ int main(int argc, char *argv[])
 	if(IpV6 == 0) {
 		server.sin_family = AF_INET;
 		server.sin_addr.s_addr = INADDR_ANY;
-		server.sin_port = atoi(argv[2]);
+		server.sin_port = eRuraPortNumber;
         /* CALL BIND */
         if(bind(sock, (struct sockaddr*) &server, sizeof(server))) {
             perror("bind failed");

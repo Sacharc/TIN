@@ -13,9 +13,10 @@ class CommandLineInterface {
 private:
     DetectorHistory* history;
     std::mutex* m;
-
+    bool end;
 public:
     CommandLineInterface(DetectorHistory* hist, std::mutex* mut);
+    bool isEnd();
     void mainMenu();
 private:
     void displayDetectorList();
