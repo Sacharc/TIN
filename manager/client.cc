@@ -1,3 +1,7 @@
+//
+// Created by Pawel Jonski.
+// Modified by Michal Sacharczuk, Jakub Dudziak.
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -31,8 +35,6 @@ std::vector<int> findDetectors() {
     times.tv_usec=10000;
 
     std::vector<int> socks;
-    //  TODO wydaje mi sie ze nie potrzebne do przetestowania
-    std::vector<struct sockaddr_in> servs;
 
     for (int i = 1; i < 255; i++) {
         char buf[39];
@@ -69,7 +71,6 @@ std::vector<int> findDetectors() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         socks.push_back(soc);
-        servs.push_back(serv);
     }
     return socks;
 }
@@ -152,7 +153,6 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
 fd_set setFlags() {
     fd_set readfds;
     FD_ZERO (&readfds);
-    int end = 0;
     for(unsigned i = 0; i < sockets.size(); i++) {
         FD_SET(sockets[i],&readfds);
     }

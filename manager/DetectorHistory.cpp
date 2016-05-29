@@ -1,5 +1,5 @@
 //
-// Created by Michal Sacharczuk
+// Created by Michal Sacharczuk.
 //
 
 #include "DetectorHistory.h"

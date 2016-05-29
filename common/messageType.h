@@ -1,3 +1,6 @@
+//
+// Created by Michal Sacharczuk.
+//
 #ifndef TEST_MESSAGETYPE_H
 #define TEST_MESSAGETYPE_H
 

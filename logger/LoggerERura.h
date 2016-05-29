@@ -1,5 +1,5 @@
 //
-// Created by jdudziak on 5/22/16.
+// Created by Jakub Dudziak
 //
 // Class realize logger to file in all functions of program - singleton
 

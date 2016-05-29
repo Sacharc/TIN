@@ -1,6 +1,6 @@
 --
 -- Created by IntelliJ IDEA.
--- User: michto
+-- User: Michal Tomaszewski
 -- Date: 17.04.16
 -- Time: 02:48
 -- To change this template use File | Settings | File Templates.

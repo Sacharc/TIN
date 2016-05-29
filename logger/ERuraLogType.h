@@ -1,5 +1,5 @@
 //
-// Created by jdudziak on 5/22/16.
+// Created by Jakub Dudziak.
 //
 
 #ifndef TIN_ERURALOGTYPE_H

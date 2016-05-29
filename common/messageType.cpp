@@ -1,5 +1,5 @@
 //
-// Created by sacharc on 28.05.16.
+// Created by Michal Sacharczuk.
 //
 
 #include "messageType.h"

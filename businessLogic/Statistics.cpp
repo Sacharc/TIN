@@ -1,5 +1,5 @@
 //
-// Created by jdudziak on 5/8/16.
+// Created by Jakub Dudziak.
 //
 #include "Statistics.h"
 

@@ -1,5 +1,5 @@
 //
-// Created by michto on 25.05.16.
+// Created by Michal Tomaszewski.
 //
 
 #ifndef TIN_HTTPHANDLER_H

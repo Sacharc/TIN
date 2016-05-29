@@ -1,5 +1,5 @@
 //
-// Created by sacharc on 29.05.16.
+// Created by Michal Sacharczuk.
 //
 
 #ifndef TIN_CONSTANTS_H

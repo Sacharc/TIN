@@ -1,6 +1,7 @@
 //
-// Created by msacharc on 23.05.16.
+// Created by Michal Sacharczuk.
 //
+
 #include "MessageHandler.h"
 
 void MessageHandler::handle(struct message *msg) {

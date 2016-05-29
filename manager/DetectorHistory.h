@@ -1,5 +1,5 @@
 //
-// Created by msacharc on 07.05.16.
+// Created by Michal Sacharczuk.
 //
 
 #ifndef TIN_DETECTORHISTORY_H

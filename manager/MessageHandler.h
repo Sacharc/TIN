@@ -1,7 +1,6 @@
 //
-// Created by msacharc on 23.05.16.
+// Created by Michal Sacharczuk.
 //
-
 #ifndef TIN_MESSAGEHANDLER_H
 #define TIN_MESSAGEHANDLER_H
 
