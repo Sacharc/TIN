@@ -15,7 +15,6 @@
 class MessageHandler {
 private:
     DetectorHistory history;
-    LoggerERura logger;
 public:
     void handle(struct message* msg);
     DetectorHistory &getHistory();
