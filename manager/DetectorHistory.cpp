@@ -1,11 +1,11 @@
 //
-// Created by msacharc on 07.05.16.
+// Created by Michal Sacharczuk
 //
 
 #include "DetectorHistory.h"
 
 void DetectorHistory::add(int detectorId, HistoryRecord* record) {
-    // check if mamp contains key
+    // check if map contains key
     if(history.find(detectorId) == history.end()) {
         history[detectorId] = new std::vector<HistoryRecord*>;
     }
@@ -22,11 +22,6 @@ std::vector<HistoryRecord*>* DetectorHistory::getRecords(int detectorId) {
 }
 
 std::vector<HistoryRecord*>* DetectorHistory::getAllRecords() {
-//    std::vector<HistoryRecord*>* vec = new std::vector<HistoryRecord*>;
-//    for(auto it = history.begin(); it!= history.end(); it++) {
-//        auto tempVec = it->second;
-//        vec->insert(vec->end(), tempVec->begin(), tempVec->end());
-//    }
     return &allRecords;
 }
 

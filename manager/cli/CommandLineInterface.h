@@ -1,5 +1,5 @@
 //
-// Created by sacharc on 28.05.16.
+// Created by Michał Sacharczuk
 //
 
 #ifndef TIN_COMMANDLINEINTERFACE_H
@@ -8,6 +8,10 @@
 
 #include <mutex>
 #include "../DetectorHistory.h"
+#include <iostream>
+#include <algorithm>
+#include "../../common/messageType.h"
+#include "../../businessLogic/Statistics.h"
 
 class CommandLineInterface {
 private:
@@ -20,7 +24,8 @@ public:
     void mainMenu();
 private:
     void displayDetectorList();
-    void chooseDetector();
+    void displayStatistics();
+    bool chooseDetector(int &value);
     void displayHistory(bool alarmsOnly);
     void clearHistory();
     void findDetectors();

@@ -1,11 +1,8 @@
 //
-// Created by sacharc on 28.05.16.
+// Created by Michał Sacharczuk
 //
 
-#include <iostream>
-#include <algorithm>
 #include "CommandLineInterface.h"
-#include "../../common/messageType.h"
 
 void scanNetwork(std::mutex* m);
 
@@ -19,6 +16,7 @@ void CommandLineInterface::mainMenu() {
     mainMenu.push_back("Wyczysc historie");
     mainMenu.push_back("Wyswietl obecne alarmy");
     mainMenu.push_back("Wyszukaj wszystkie czujniki w podsieci");
+    mainMenu.push_back("Statystyki");
     mainMenu.push_back("Zakoncz");
 
     while(1) {
@@ -48,6 +46,9 @@ void CommandLineInterface::mainMenu() {
                 findDetectors();
                 break;
             case 7:
+                displayStatistics();
+                break;
+            case 8:
                 m->lock();
                 end = true;
                 m->unlock();
@@ -98,8 +99,24 @@ void CommandLineInterface::clearHistory() {
     history->clearHistory();
 }
 
-void CommandLineInterface::chooseDetector() {
+bool CommandLineInterface::chooseDetector(int &value) {
+    std::cout << "Lista czujnikow" <<std::endl;
+    displayDetectorList();
 
+    int val = 0;
+    std::cin >> val;
+    if (std::cin.fail()) {
+        std::cin.clear();
+        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        return false;
+    } else {
+        auto vec = history->getDetectorIds();
+        if (std::find(vec.begin(), vec.end(), val) != vec.end()) {
+            value = val;
+            return true;
+        }
+    }
+    return false;
 }
 
 void CommandLineInterface::changeTypicalResistance() {
@@ -108,4 +125,14 @@ void CommandLineInterface::changeTypicalResistance() {
 
 bool CommandLineInterface::isEnd() {
     return end;
+}
+
+void CommandLineInterface::displayStatistics() {
+    Statistics statistics;
+    auto vec = history->getAllRecords();
+    std::cout <<"Srednia rezystancja "                << statistics.countAverageCurrentResistance(vec) << std::endl;
+    std::cout <<"Srednie odstepstwo "                 << statistics.countAverageDifferenceResistance(vec) << std::endl;
+    std::cout <<"Srednia typowa rezystancja "         << statistics.countAverageTypicalResistance(vec) << std::endl;
+    std::cout <<"Liczba alarmow "                     << statistics.countDetectorWithAlarm(vec) << std::endl;
+    std::cout <<"Liczba zerwanych kabli oporowych "   << statistics.countDetectorWithInterruptNet(vec) << std::endl;
 }
