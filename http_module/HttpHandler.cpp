@@ -3,19 +3,6 @@
 //
 
 #include "HttpHandler.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <string>
-#include <ctime>
 
 void httpHandlerStart(MessageHandler* messageHandler) {
     struct sockaddr_in server_addr, client_addr;

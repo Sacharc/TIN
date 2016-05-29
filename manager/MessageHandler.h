@@ -4,7 +4,7 @@
 #ifndef TIN_MESSAGEHANDLER_H
 #define TIN_MESSAGEHANDLER_H
 
-#include <cstdio>
+#include <stdio.h>
 #include "../common/message.h"
 #include "../common/messageType.h"
 #include "DetectorHistory.h"

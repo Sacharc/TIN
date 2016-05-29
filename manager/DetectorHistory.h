@@ -5,8 +5,8 @@
 #ifndef TIN_DETECTORHISTORY_H
 #define TIN_DETECTORHISTORY_H
 
-#include<map>
-#include<vector>
+#include <map>
+#include <vector>
 #include "HistoryRecord.h"
 
 class DetectorHistory {
