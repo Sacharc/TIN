@@ -1,16 +1,17 @@
+//
+// Created by Paweł Joński
+// Modified by Michał Sacharczuk
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
-#include <pthread.h>
-#include <semaphore.h>
 #include <fstream>
 #include "../common/messageType.h"
 #include "../common/message.h"
 #include "../common/Constants.h"
 
-#define RAPORT_INTERVAL 5
 #define CHECK_STATUS_INTERVAL 1
 #define IpV6 0
 // global variables - detector specific
@@ -18,7 +19,7 @@ int detector_id;
 int safe_level;
 int water_level;
 
-int detector_send(int sock, messageType type)
+int detector_send(int sock, int type)
 {
 	struct message *msg;
 	int err;
@@ -60,8 +61,6 @@ int main(int argc, char *argv[])
 
 	srand(time(NULL));
 	detector_id = atoi (argv[1]);
-	water_level = 2000 + rand() % 2000;
-	safe_level = 3000;
 
     loadTypicalResistance();
 
@@ -102,7 +101,7 @@ int main(int argc, char *argv[])
 /* ACCEPT */
 	while(1) {
 		int end=0;
-		int iter =0;
+
 		printf("waiting for connection from manager...\n");
 		mysock = accept(sock, (struct sockaddr *) 0, 0);
 		/* REPORT AND ALARM UNTIL MANAGER DISCONNECTS */
@@ -110,20 +109,18 @@ int main(int argc, char *argv[])
 			if(mysock < 1)
 				perror("accept failed");
 			else {
-				water_level = 2000 + rand() % 2000;
-				if(iter % RAPORT_INTERVAL == 0)
-					if (detector_send(mysock, REPORT) == -1) {
-						end = 1;
-						break;
-					}
-				if(water_level >= safe_level)
-					if (detector_send(mysock, ALARM) == -1) {
-						end = 1;
-						break;
-					}
+                water_level = safe_level - safe_level/4 +rand()%(safe_level/2);
+                int type = water_level < safe_level ? ALARM : REPORT;
+                if(rand()%23 == 0)
+                    type = INFINITY_RESISTANCE;
+
+                if (detector_send(mysock, type) == -1) {
+                    end = 1;
+                    break;
+                }
+
 				sleep(CHECK_STATUS_INTERVAL);
 			}
-			iter++;
 		} while(!end);
 	}
 	close(sock);
