@@ -43,7 +43,9 @@ int detector_send(int sock, int type)
 
 void loadTypicalResistance() {
     std::ifstream config("config.conf");
-    config>>safe_level;
+    if(config.is_open())
+        config>>safe_level;
+    safe_level = 6676;
 }
 
 int main(int argc, char *argv[])
