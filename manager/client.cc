@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <iostream>
 #include <thread>
+#include <stdint.h>
 #include <sys/time.h>
 #include <fcntl.h>
 #include <netinet/in.h>
@@ -17,8 +18,10 @@
 #include "MessageHandler.h"
 #include "../http_module/HttpHandler.h"
 #include "cli/CommandLineInterface.h"
+#define IpV6 0
 
 const char* eRuraSubnet = "192.168.1";
+const char* eRuraSubnetIpv6 = "fe80:0000:0000:0000:0000:0000:0000:0001";
 const int eRuraPortNumber = 2137;
 
 std::vector<int> findDetectors() {
@@ -32,7 +35,7 @@ std::vector<int> findDetectors() {
     std::vector<struct sockaddr_in> servs;
 
     for (int i = 1; i < 255; i++) {
-        char buf[16];
+        char buf[39];
         struct sockaddr_in serv;
         fd_set fds_connect;
         FD_ZERO (&fds_connect);
@@ -53,6 +56,56 @@ std::vector<int> findDetectors() {
         memcpy(&serv.sin_addr, hp->h_addr, hp->h_length);
         serv.sin_port = eRuraPortNumber;
         printf("Address: %s\n",inet_ntoa(serv.sin_addr));
+        connect(soc, (struct sockaddr*) &serv, sizeof (serv));
+        fd_set fd;
+        FD_ZERO(&fd);
+        FD_SET(soc,&fd);
+        times.tv_usec=10000;
+        if (select(FD_SETSIZE, NULL, &fd, NULL, &times) <1)
+        {
+            printf("Connect failed!\n");
+            close(soc);
+            continue;
+        }
+        printf("Successfully connected to: %s\n",hp->h_name);
+        sockets.push_back(soc);
+        servs.push_back(serv);
+    }
+    return sockets;
+}
+
+std::vector<int> findDetectorsIPv6() {
+    struct hostent *hp;
+    struct timeval times;
+    times.tv_sec=0;
+    times.tv_usec=10000;
+
+    std::vector<int> sockets;
+    //  TODO wydaje mi sie ze nie potrzebne do przetestowania
+    std::vector<struct sockaddr_in6> servs;
+
+    for (int i = 1; i < 65536; i++) {
+        char buf[128];
+        struct sockaddr_in6 serv;
+        fd_set fds_connect;
+        FD_ZERO (&fds_connect);
+        //printf("Client started\n");
+        int soc = socket(AF_INET6, SOCK_STREAM, 0);
+        fcntl(soc, F_SETFL, O_NONBLOCK);
+        if(soc<0) {
+            close(soc);
+            continue;
+        }
+        serv.sin6_family = AF_INET6;
+        snprintf(buf, 16, "%s.%d", eRuraSubnetIpv6, i);
+        hp = gethostbyname2 (buf, AF_INET6);
+        if (hp == 0) {
+            close(soc);
+            continue;
+        }
+        memcpy(&serv.sin6_addr, hp->h_addr, hp->h_length);
+        serv.sin6_port = eRuraPortNumber;
+        printf("Address: %s\n",buf);
         connect(soc, (struct sockaddr*) &serv, sizeof (serv));
         fd_set fd;
         FD_ZERO(&fd);
@@ -123,7 +176,11 @@ int main(int argc, char *argv[])
 
     /* Create http handler thread */
     std::thread httpHandler(httpHandlerStart, &handler);
-    std::vector<int> sockets = findDetectors();
+    std::vector<int> sockets;
+    if(IpV6 == 0)
+        sockets = findDetectors();
+    else
+        sockets = findDetectorsIPv6();
 
     std::thread loop(detectorListener, &handler, &sockets);
 
