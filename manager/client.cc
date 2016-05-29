@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
     CommandLineInterface cli(&handler.getHistory(), &m);
 
     /* Create http handler thread */
-    std::thread httpHandler(httpHandlerStart, &handler);
+    std::thread httpHandler(httpHandlerStart, &handler, &cli);
     if(IpV6 == 0)
         sockets = findDetectors();
     else
@@ -204,6 +204,7 @@ int main(int argc, char *argv[])
 
     cli.mainMenu();
 
+    httpHandler.join();
     loop.join();
 
     return 0;

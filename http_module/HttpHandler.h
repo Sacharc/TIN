@@ -7,13 +7,14 @@
 
 #include "../manager/DetectorHistory.h"
 #include "../manager/MessageHandler.h"
+#include "../manager/cli/CommandLineInterface.h"
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <string.h>
 
-void httpHandlerStart(MessageHandler*);
+void httpHandlerStart(MessageHandler*, CommandLineInterface *cli);
 const char* buildHtmlString(std::vector<HistoryRecord*>*);
 
 #endif //TIN_HTTPHANDLER_H

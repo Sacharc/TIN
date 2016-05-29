@@ -4,7 +4,7 @@
 
 #include "HttpHandler.h"
 
-void httpHandlerStart(MessageHandler* messageHandler) {
+void httpHandlerStart(MessageHandler* messageHandler, CommandLineInterface *cli) {
     struct sockaddr_in server_addr, client_addr;
     socklen_t sin_len = sizeof(client_addr);
     int fd_server, fd_client;
@@ -35,44 +35,63 @@ void httpHandlerStart(MessageHandler* messageHandler) {
         exit(1);
     }
 
-    while(1){
-        fd_client = accept(fd_server, (struct sockaddr*) &client_addr, &sin_len);
+    while(!cli->isEnd()){
+        int res;
+        fd_set fds;
+        struct timeval tv = {5, 0};
 
-        if(fd_client == -1){
-            perror("HTTP Connection failed.....\n");
-            continue;
+        FD_ZERO (&fds);
+        FD_SET (fd_server, &fds);
+
+        res = select (fd_server + 1, &fds, NULL, NULL, &tv);
+        if (res > 0) {
+            fd_client = accept(fd_server, (struct sockaddr*) &client_addr, &sin_len);
+
+            if(fd_client == -1){
+                perror("HTTP Connection failed.....\n");
+                continue;
+            }
+
+//            printf("Got HTTP client connect...\n");
+
+            memset(buf,0,2048);
+            read(fd_client, buf, 2047);
+
+            const char* webpage = buildHtmlString(messageHandler->getHistory().getAllRecords());
+
+            if(webpage != NULL){
+                write(fd_client, webpage, strlen(webpage) - 1);
+            }
+            close(fd_client);
         }
-
-        printf("Got HTTP client connect...\n");
-
-        memset(buf,0,2048);
-        read(fd_client, buf, 2047);
-
-        const char* webpage = buildHtmlString(messageHandler->getHistory().getAllRecords());
-
-        if(webpage != NULL){
-            write(fd_client, webpage, strlen(webpage) - 1);
-        }
-        close(fd_client);
     }
+    close(fd_server);
 }
 
 
 
 const char* buildHtmlString(std::vector<HistoryRecord*>* history){
-
+    Statistics statistics;
     std::string webpageStr = "HTTP/1.1 200 OK\r\n"
             "Content-Type: text/html; charset=UTF-8\r\n\r\n"
             "<!DOCTYPE HTML>\r\n"
             "<html><head><title>TIN_HTTP_MODULE</title></head>\r\n"
             "<body><center><h1>TIN - DETECTORS AND MANAGER</h1></center>\r\n"
+            "<h4>Średnia rezystancja:               " + std::to_string(statistics.countAverageCurrentResistance(history)) + "</h4>" + "\r\n"
+            "<h4>Srednie odstepstwo:                " + std::to_string(statistics.countAverageDifferenceResistance(history)) + "</h4>" + "\r\n"
+            "<h4>Srednia typowa rezystancja:        " + std::to_string(statistics.countAverageTypicalResistance(history)) + "</h4>" + "\r\n"
+            "<h4>Liczba alarmow:                    " + std::to_string(statistics.countDetectorWithAlarm(history)) + "</h4>" + "\r\n"
+            "<h4>Liczba zerwanych kabli oporowych:  " + std::to_string(statistics.countDetectorWithInterruptNet(history)) + "</h4>" + "\r\n"
+            "<br>\r\n"
+            "<br>\r\n"
+            "</table>\r\n"
             "<table>\r\n"
             "<tr>\r\n"
             "<td>CZAS</td>\r\n"
             "<td>ID</td>\r\n"
             "<td>TYP WIADOMOŚCI</td>\r\n"
             "<td>OBECNY POMIAR</td>\r\n"
-            "<td>LIMIT</td>\r\n"
+            "<td>TYPOWA REZYSTANCJA</td>\r\n"
             "</tr>\r\n"
             "<tr>\r\n"
             "<td>---------------------------------------</td>\r\n"
@@ -82,8 +101,7 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
             "<td>---------------------------------------</td>\r\n"
             "</tr>\r\n";
 
-    size_t limit = history->size();
-    for (unsigned i = 0; i < limit; ++i){
+    for (unsigned i = 1; i < history->size() && i < 100; ++i){
         char buff[80];
         std::string tr = "<tr>";
         std::string tre = "</tr>";
@@ -92,13 +110,13 @@ const char* buildHtmlString(std::vector<HistoryRecord*>* history){
         std::string endln = "\r\n";
 
 
-        time_t time1 = history->at(i)->getTime();
+        time_t time1 = history->at(history->size()-i)->getTime();
         strftime(buff, 80, "%Y-%m-%d %H:%M:%S", localtime(&time1));
         std::string time(buff);
-        std::string id = std::to_string(history->at(i)->getMessage().id);
-        std::string type = messageTypeToString(history->at(i)->getMessageType());
-        std::string currentResistence = std::to_string(history->at(i)->getCurrentResistance());
-        std::string typicalResistance = std::to_string(history->at(i)->getTypicalResistance());
+        std::string id = std::to_string(history->at(history->size()-i)->getMessage().id);
+        std::string type = messageTypeToString(history->at(history->size()-i)->getMessageType());
+        std::string currentResistence = std::to_string(history->at(history->size()-i)->getCurrentResistance());
+        std::string typicalResistance = std::to_string(history->at(history->size()-i)->getTypicalResistance());
 
         webpageStr +=
                 tr + endln +

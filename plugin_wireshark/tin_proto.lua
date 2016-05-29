@@ -48,5 +48,5 @@ function tin_proto.init()
 end
 
 local tcp_dissector_table = DissectorTable.get("tcp.port")
-dissector = tcp_dissector_table:get_dissector(17183)
-tcp_dissector_table:add(17183, tin_proto)
+dissector = tcp_dissector_table:get_dissector(22792)
+tcp_dissector_table:add(22792, tin_proto)
