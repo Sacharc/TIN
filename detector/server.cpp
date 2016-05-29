@@ -79,24 +79,22 @@ int main(int argc, char *argv[])
 		server.sin_family = AF_INET;
 		server.sin_addr.s_addr = INADDR_ANY;
 		server.sin_port = atoi(argv[2]);
+        /* CALL BIND */
+        if(bind(sock, (struct sockaddr*) &server, sizeof(server))) {
+            perror("bind failed");
+            exit(1);
+        }
 	}
 	else {
 		server6.sin6_family = AF_INET6;
 		server6.sin6_addr = in6addr_any;
 		server6.sin6_port = atoi(argv[2]);
-	}
-/* CALL BIND */
-	if(bind(sock, (struct sockaddr*) &server, sizeof(server))) {
-		perror("bind failed");
-		exit(1);
-	}
-
-/* CALL BIND  server6 = ipv6 */
-	if(bind(sock, (struct sockaddr*) &server6, sizeof(server6))) {
-		perror("bind failed");
-		exit(1);
-	}
-
+        /* CALL BIND  server6 = ipv6 */
+        if(bind(sock, (struct sockaddr*) &server6, sizeof(server6))) {
+            perror("bind failed");
+            exit(1);
+        }
+    }
 
 /* LISTEN */
 	listen(sock,5);
