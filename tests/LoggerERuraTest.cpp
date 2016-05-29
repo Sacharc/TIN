@@ -10,9 +10,8 @@
 TEST(Test_Logger_1, PositiveNos) {
     bool test[3] = {false};
 
-    LoggerERura loggerERura;
-    loggerERura << ERuraLogType::LOGGER_DEBUG;
-    loggerERura << "Test abc efg";
+    LoggerERura::getInstance() << ERuraLogType::LOGGER_DEBUG;
+    LoggerERura::getInstance() << "Test abc efg";
 
     std::ifstream t("eRuraLog.txt");
     std::string test_string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
@@ -29,10 +28,9 @@ TEST(Test_Logger_1, PositiveNos) {
 TEST(Test_Logger_2, PositiveNos) {
     bool test[3] = {false};
 
-    LoggerERura loggerERura;
-    loggerERura << ERuraLogType::LOGGER_ERROR;
-    loggerERura << ERuraLogType::LOGGER_INFO;
-    loggerERura << ERuraLogType::LOGGER_WARNING;
+    LoggerERura::getInstance() << ERuraLogType::LOGGER_ERROR;
+    LoggerERura::getInstance() << ERuraLogType::LOGGER_INFO;
+    LoggerERura::getInstance() << ERuraLogType::LOGGER_WARNING;
 
     std::ifstream t("eRuraLog.txt");
     std::string test_string((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
