@@ -12,6 +12,7 @@
 class DetectorHistory {
 private:
     std::map<int, std::vector<HistoryRecord*>*> history;
+    std::vector<HistoryRecord*> allRecords;
 public:
     void add(int detectorId, HistoryRecord* record);
     std::vector<HistoryRecord*>* getRecords(int detectorId);

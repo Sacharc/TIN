@@ -13,6 +13,7 @@
 #include <fcntl.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <mutex>
 #include "../common/messageType.h"
 #include "../common/message.h"
 #include "MessageHandler.h"
@@ -23,6 +24,8 @@
 const char* eRuraSubnet = "192.168.1";
 const char* eRuraSubnetIpv6 = "fe80:0000:0000:0000:0000:0000:0000:0001";
 const int eRuraPortNumber = 2137;
+
+std::vector<int> sockets;
 
 std::vector<int> findDetectors() {
     struct hostent *hp;
@@ -124,13 +127,13 @@ std::vector<int> findDetectorsIPv6() {
     return sockets;
 }
 
-void closeSocktes(const std::vector<int> &sockets) {
+void closeSocktes() {
     for (unsigned i = 0; i < sockets.size(); i++) {
         close(sockets[i]);
     }
 }
 
-void checkAllDetectors(MessageHandler &handler, std::vector<int> &sockets, fd_set &readfds) {
+void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
     struct message *msg = (struct message*)malloc(sizeof(struct message));
     select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
     for (unsigned i = 0; i < sockets.size(); i++) {
@@ -149,7 +152,7 @@ void checkAllDetectors(MessageHandler &handler, std::vector<int> &sockets, fd_se
     }
 }
 
-fd_set setFlags(const std::vector<int> &sockets) {
+fd_set setFlags() {
     fd_set readfds;
     FD_ZERO (&readfds);
     int end = 0;
@@ -159,32 +162,49 @@ fd_set setFlags(const std::vector<int> &sockets) {
     return readfds;
 }
 
+void scanNetwork(std::mutex* m) {
+    m->lock();
 
-void detectorListener(MessageHandler *handler, std::vector<int> *sockets) {
-    fd_set readfds = setFlags(*sockets);
-    sleep(1);
-
-    while(1)
-        checkAllDetectors(*handler, *sockets, readfds);
-
-    closeSocktes(*sockets);
-}
-
-int main(int argc, char *argv[])
-{
-    MessageHandler handler;
-
-    /* Create http handler thread */
-    std::thread httpHandler(httpHandlerStart, &handler);
-    std::vector<int> sockets;
+    closeSocktes();
+    sockets.clear();
     if(IpV6 == 0)
         sockets = findDetectors();
     else
         sockets = findDetectorsIPv6();
 
-    std::thread loop(detectorListener, &handler, &sockets);
+    m->unlock();
+}
 
-    CommandLineInterface cli(&handler.getHistory());
+
+void detectorListener(MessageHandler *handler, std::mutex* m) {
+    fd_set readfds = setFlags();
+    sleep(1);
+
+    while(1) {
+        m->lock();
+        checkAllDetectors(*handler, readfds);
+        m->unlock();
+        sleep(1);
+    }
+
+    closeSocktes();
+}
+
+int main(int argc, char *argv[])
+{
+    MessageHandler handler;
+    std::mutex m;
+
+    /* Create http handler thread */
+    std::thread httpHandler(httpHandlerStart, &handler);
+    if(IpV6 == 0)
+        sockets = findDetectors();
+    else
+        sockets = findDetectorsIPv6();
+
+    std::thread loop(detectorListener, &handler, &m);
+
+    CommandLineInterface cli(&handler.getHistory(), &m);
     cli.mainMenu();
 
     return 0;

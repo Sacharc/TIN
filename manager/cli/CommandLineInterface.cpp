@@ -7,6 +7,7 @@
 #include "CommandLineInterface.h"
 #include "../../common/messageType.h"
 
+void scanNetwork(std::mutex* m);
 
 void CommandLineInterface::mainMenu() {
     std::vector<std::string> mainMenu;
@@ -84,10 +85,10 @@ void CommandLineInterface::displayHistory(bool alarmsOnly) {
     }
 }
 
-CommandLineInterface::CommandLineInterface(DetectorHistory *hist) : history(hist) { }
+CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist), m(mut) { }
 
 void CommandLineInterface::findDetectors() {
-
+    scanNetwork(m);
 }
 
 void CommandLineInterface::clearHistory() {

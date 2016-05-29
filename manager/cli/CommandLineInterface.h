@@ -6,14 +6,16 @@
 #define TIN_COMMANDLINEINTERFACE_H
 
 
+#include <mutex>
 #include "../DetectorHistory.h"
 
 class CommandLineInterface {
 private:
     DetectorHistory* history;
+    std::mutex* m;
 
 public:
-    CommandLineInterface(DetectorHistory* hist);
+    CommandLineInterface(DetectorHistory* hist, std::mutex* mut);
     void mainMenu();
 private:
     void displayDetectorList();

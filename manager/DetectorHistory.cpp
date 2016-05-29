@@ -10,6 +10,7 @@ void DetectorHistory::add(int detectorId, HistoryRecord* record) {
         history[detectorId] = new std::vector<HistoryRecord*>;
     }
     history[detectorId]->push_back(record);
+    allRecords.push_back(record);
 }
 
 std::vector<HistoryRecord*>* DetectorHistory::getRecords(int detectorId) {
@@ -21,12 +22,12 @@ std::vector<HistoryRecord*>* DetectorHistory::getRecords(int detectorId) {
 }
 
 std::vector<HistoryRecord*>* DetectorHistory::getAllRecords() {
-    std::vector<HistoryRecord*>* vec = new std::vector<HistoryRecord*>;
-    for(auto it = history.begin(); it!= history.end(); it++) {
-        auto tempVec = it->second;
-        vec->insert(vec->end(), tempVec->begin(), tempVec->end());
-    }
-    return vec;
+//    std::vector<HistoryRecord*>* vec = new std::vector<HistoryRecord*>;
+//    for(auto it = history.begin(); it!= history.end(); it++) {
+//        auto tempVec = it->second;
+//        vec->insert(vec->end(), tempVec->begin(), tempVec->end());
+//    }
+    return &allRecords;
 }
 
 std::vector<int> DetectorHistory::getDetectorIds() {
@@ -38,5 +39,6 @@ std::vector<int> DetectorHistory::getDetectorIds() {
 }
 
 void DetectorHistory::clearHistory() {
+    allRecords.clear();
     history.clear();
 }
