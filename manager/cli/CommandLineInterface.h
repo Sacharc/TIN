@@ -25,12 +25,8 @@ public:
 private:
     void displayDetectorList();
     void displayStatistics();
-    bool chooseDetector(unsigned &value);
     void displayHistory(bool alarmsOnly);
     void clearHistory();
-    void findDetectors();
-    void changeTypicalResistance();
 };
-
 
 #endif //TIN_COMMANDLINEINTERFACE_H

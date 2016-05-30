@@ -4,21 +4,16 @@
 
 #include "CommandLineInterface.h"
 
-void scanNetwork(std::mutex* m);
-void changeTypical(int id, int value);
-
 CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist),
-                                                                                                            m(mut),
-                                                                                                            end(false){ }
+                                                                                     m(mut),
+                                                                                     end(false){ }
 
 void CommandLineInterface::mainMenu() {
     std::vector<std::string> mainMenu;
     mainMenu.push_back("Wyswietl liste czujnikow");
-    mainMenu.push_back("Zmien poziom alarmow");
     mainMenu.push_back("Wyswietl historie");
     mainMenu.push_back("Wyczysc historie");
     mainMenu.push_back("Wyswietl obecne alarmy");
-    mainMenu.push_back("Wyszukaj wszystkie czujniki w podsieci");
     mainMenu.push_back("Statystyki");
     mainMenu.push_back("Zakoncz");
 
@@ -34,24 +29,18 @@ void CommandLineInterface::mainMenu() {
                 displayDetectorList();
                 break;
             case 2:
-                changeTypicalResistance();
-                break;
-            case 3:
                 displayHistory(false);
                 break;
-            case 4:
+            case 3:
                 clearHistory();
                 break;
-            case 5:
+            case 4:
                 displayHistory(true);
                 break;
-            case 6:
-                findDetectors();
-                break;
-            case 7:
+            case 5:
                 displayStatistics();
                 break;
-            case 8:
+            case 6:
                 m->lock();
                 end = true;
                 m->unlock();
@@ -94,51 +83,8 @@ void CommandLineInterface::displayHistory(bool alarmsOnly) {
     }
 }
 
-void CommandLineInterface::findDetectors() {
-    scanNetwork(m);
-}
-
 void CommandLineInterface::clearHistory() {
     history->clearHistory();
-}
-
-bool CommandLineInterface::chooseDetector(unsigned &value) {
-    std::cout << "Lista czujnikow" <<std::endl;
-    displayDetectorList();
-
-    unsigned val = 0;
-    std::cin >> val;
-    if (std::cin.fail()) {
-        std::cin.clear();
-        std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        return false;
-    }
-
-    auto vec = history->getDetectorIds();
-    value = val;
-    return (val >= 0 && val < vec.size());
-}
-
-void CommandLineInterface::changeTypicalResistance() {
-    std::cout <<"Wybierz czujke: " << std::endl;
-    unsigned value;
-    if(chooseDetector(value)) {
-        int resistance;
-        std::cout << "Podaj rezystancje: " << std::endl;
-        std::cin >> resistance;
-        if (std::cin.fail()) {
-            std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-            std::cout << "Wystapil blad: " << std::endl;
-            return;
-        }
-        //typical->at(value) = resistance;
-        auto vec = history->getDetectorIds();
-        changeTypical(vec[value], resistance);
-    } else {
-        std::cout <<"Wystapil blad: " << std::endl;
-    }
-
 }
 
 bool CommandLineInterface::isEnd() {

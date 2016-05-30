@@ -5,33 +5,25 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
 #include <unistd.h>
 #include <iostream>
 #include <thread>
-#include <stdint.h>
-#include <sys/time.h>
 #include <fcntl.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
 #include <mutex>
-#include "../common/messageType.h"
 #include "../common/message.h"
 #include "../common/Constants.h"
 #include "MessageHandler.h"
 #include "../http_module/HttpHandler.h"
-#include "cli/CommandLineInterface.h"
 #include <sstream>
 #include <iterator>
 #include <iomanip>
 #define IpV6 0
 // sockets
 std::vector<int> sockets;
-
-std::map<int, int> idTypical;
 
 std::string changeFormatIPv6(int hexIP) {
     std::stringstream stream;
@@ -150,16 +142,11 @@ void closeSocktes() {
     }
 }
 
-void changeTypical(int id, int value) {
-    idTypical[id] = value;
-}
-
 void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
     struct message *msg = (struct message*)malloc(sizeof(struct message));
     select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
     for (unsigned i = 0; i < sockets.size(); i++) {
         if(sockets[i] != -1 && FD_ISSET(sockets[i], &readfds)) {
-            int err;
             msg =(struct message*)  malloc(sizeof(struct message));
             int rval = recv(sockets[i], msg, sizeof(struct message), 0);
             if (rval < 0 ) {
@@ -171,20 +158,6 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
             } else {
                 handler.handle(msg);
             }
-//            auto f = idTypical.find(msg->id);
-//            if(f!= idTypical.end())
-//                msg->typicalResistance = idTypical[msg->id];
-//            else
-//                msg->typicalResistance = defaultTypicalResistance;
-//            msg->id = 0;
-//            msg->msg_type = CHANGE_TYPICAL_RESISTANCE;
-//            msg->currentResistance = 0;
-//            //msg->typicalResistance = typical[i];
-//            err = send(sockets[i], msg, sizeof(struct message), MSG_NOSIGNAL);
-//            if( err < 0) {
-//                perror("Sending raport failed");
-//            }
-
         }
     }
     free(msg);
@@ -198,20 +171,6 @@ fd_set setFlags() {
     }
     return readfds;
 }
-
-void scanNetwork(std::mutex* m) {
-    m->lock();
-
-    closeSocktes();
-    sockets.clear();
-    if(IpV6 == 0)
-        sockets = findDetectors();
-    else
-        sockets = findDetectorsIPv6();
-
-    m->unlock();
-}
-
 
 void detectorListener(MessageHandler *handler, std::mutex* m, CommandLineInterface *cli) {
     fd_set readfds = setFlags();

@@ -21,6 +21,8 @@
 int detector_id;
 int typicalResistance;
 int currentResistance;
+int sock;
+int mysock;
 
 int detector_send(int sock, int type)
 {
@@ -40,36 +42,12 @@ int detector_send(int sock, int type)
 	const char* name = type == ALARM ? "Alarm" : "Raport";
 
 	printf("%s Sent: id: %ld, type: %d, current resistance: %d, typical eesistance: %d\n", name,
-	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-
-//    fd_set readfds;
-//    FD_ZERO (&readfds);
-//    FD_SET(sock, &readfds);
-//
-//    int rval = recv(sock, msg, sizeof(struct message), 0);
-//    if (rval < 0 ) {
-//        perror("reading stream message error");
-//    } else if (rval==0) {
-//        printf("Ending connection\n");
-//    }
-//
-//    if(msg->msg_type == CHANGE_TYPICAL_RESISTANCE) {
-//        typicalResistance = msg->typicalResistance;
-//    }
-//
-//    printf("Received: id: %ld, type: %d, current resistance: %d, typical resistance: %d\n",
-//           msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-
-
+           msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
     free(msg);
 	return 0;
 }
 
-int sock;
-int mysock;
-
-
-int createSockets() {
+void createSockets() {
     struct sockaddr_in server;
     struct sockaddr_in6 server6;
 
@@ -169,7 +147,6 @@ int main(int argc, char *argv[])
                 currentResistance = i;
         }
     }
-
 
     close(sock);
 
