@@ -86,6 +86,11 @@ std::vector<int> findDetectors() {
             close(soc);
             continue;
         }
+
+        long arg = fcntl(soc, F_GETFL, NULL);
+        arg &= (~O_NONBLOCK);
+        fcntl(soc, F_SETFL, arg);
+
         printf("Successfully connected to: %s\n",hp->h_name);
         socks.push_back(soc);
     }
@@ -166,19 +171,19 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
             } else {
                 handler.handle(msg);
             }
-            auto f = idTypical.find(msg->id);
-            if(f!= idTypical.end())
-                msg->typicalResistance = idTypical[msg->id];
-            else
-                msg->typicalResistance = defaultTypicalResistance;
-            msg->id = 0;
-            msg->msg_type = CHANGE_TYPICAL_RESISTANCE;
-            msg->currentResistance = 0;
-            //msg->typicalResistance = typical[i];
-            err = send(sockets[i], msg, sizeof(struct message), MSG_NOSIGNAL);
-            if( err < 0) {
-                perror("Sending raport failed");
-            }
+//            auto f = idTypical.find(msg->id);
+//            if(f!= idTypical.end())
+//                msg->typicalResistance = idTypical[msg->id];
+//            else
+//                msg->typicalResistance = defaultTypicalResistance;
+//            msg->id = 0;
+//            msg->msg_type = CHANGE_TYPICAL_RESISTANCE;
+//            msg->currentResistance = 0;
+//            //msg->typicalResistance = typical[i];
+//            err = send(sockets[i], msg, sizeof(struct message), MSG_NOSIGNAL);
+//            if( err < 0) {
+//                perror("Sending raport failed");
+//            }
 
         }
     }
