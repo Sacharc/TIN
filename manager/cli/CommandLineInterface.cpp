@@ -5,6 +5,7 @@
 #include "CommandLineInterface.h"
 
 void scanNetwork(std::mutex* m);
+void changeTypical(int id, int value);
 
 CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut, std::vector<int>* typ) : history(hist),
                                                                                                             m(mut),
@@ -132,7 +133,9 @@ void CommandLineInterface::changeTypicalResistance() {
             std::cout << "Wystapil blad: " << std::endl;
             return;
         }
-        typical->at(value) = resistance;
+        //typical->at(value) = resistance;
+        auto vec = history->getDetectorIds();
+        changeTypical(vec[value], resistance);
     } else {
         std::cout <<"Wystapil blad: " << std::endl;
     }

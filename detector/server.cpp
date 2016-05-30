@@ -62,13 +62,6 @@ int detector_send(int sock, int type)
 	return 0;
 }
 
-void loadTypicalResistance() {
-    std::ifstream config("config.conf");
-    if(config.is_open())
-        config>>typicalResistance;
-    typicalResistance = 6676;
-}
-
 int sock;
 int mysock;
 
@@ -123,7 +116,6 @@ void mainLoop() {
 			if(mysock < 1)
 				perror("accept failed");
 			else {
-                //currentResistance = typicalResistance - typicalResistance/4 +rand()%(typicalResistance/2);
                 int type = currentResistance < typicalResistance ? ALARM : REPORT;
                 if(currentResistance > 999999)
                     type = INFINITY_RESISTANCE;
@@ -150,13 +142,12 @@ int main(int argc, char *argv[])
 	srand(time(NULL));
 	detector_id = atoi (argv[1]);
 
-    loadTypicalResistance();
+    typicalResistance = defaultTypicalResistance;
+    currentResistance = defaultTypicalResistance;
 
     createSockets();
 
     std::thread loop(mainLoop);
-
-    //mainLoop();
 
     int i = 0;
 

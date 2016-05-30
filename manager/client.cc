@@ -28,9 +28,14 @@
 #include <iterator>
 #include <iomanip>
 #define IpV6 0
-
+// sockets
 std::vector<int> sockets;
+// typical resistance for socket
 std::vector<int> typical;
+// detectors id
+std::vector<int> ids;
+
+std::map<int, int> idTypical;
 
 std::string changeFormatIPv6(int hexIP) {
     std::stringstream stream;
@@ -88,6 +93,7 @@ std::vector<int> findDetectors() {
         printf("Successfully connected to: %s\n",hp->h_name);
         socks.push_back(soc);
         typical.push_back(defaultTypicalResistance);
+        ids.push_back(-1);
     }
     return socks;
 }
@@ -135,6 +141,7 @@ std::vector<int> findDetectorsIPv6() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         sockets.push_back(soc);
+        ids.push_back(-1);
         typical.push_back(defaultTypicalResistance);
     }
     return sockets;
@@ -144,6 +151,10 @@ void closeSocktes() {
     for (unsigned i = 0; i < sockets.size(); i++) {
         close(sockets[i]);
     }
+}
+
+void changeTypical(int id, int value) {
+    idTypical[id] = value;
 }
 
 void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
@@ -158,16 +169,22 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
                 perror("reading stream message error");
                 FD_CLR(sockets[i],&readfds);
                 sockets[i]=-1;
+                ids[i] = -1;
             } else if (rval==0) {
                 printf("Ending connection\n");
             } else {
+                ids[i] = msg->id;
                 handler.handle(msg);
             }
-
+            auto f = idTypical.find(msg->id);
+            if(f!= idTypical.end())
+                msg->typicalResistance = idTypical[msg->id];
+            else
+                msg->typicalResistance = defaultTypicalResistance;
             msg->id = 0;
             msg->msg_type = CHANGE_TYPICAL_RESISTANCE;
             msg->currentResistance = 0;
-            msg->typicalResistance = typical[i];
+            //msg->typicalResistance = typical[i];
             err = send(sockets[i], msg, sizeof(struct message), MSG_NOSIGNAL);
             if( err < 0) {
                 perror("Sending raport failed");
