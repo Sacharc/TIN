@@ -18,9 +18,8 @@ private:
     DetectorHistory* history;
     std::mutex* m;
     bool end;
-    std::vector<int>* typical;
 public:
-    CommandLineInterface(DetectorHistory* hist, std::mutex* mut, std::vector<int>* typ);
+    CommandLineInterface(DetectorHistory* hist, std::mutex* mut);
     bool isEnd();
     void mainMenu();
 private:

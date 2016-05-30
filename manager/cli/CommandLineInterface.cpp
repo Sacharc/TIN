@@ -7,10 +7,9 @@
 void scanNetwork(std::mutex* m);
 void changeTypical(int id, int value);
 
-CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut, std::vector<int>* typ) : history(hist),
+CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist),
                                                                                                             m(mut),
-                                                                                                            end(false),
-                                                                                                            typical(typ) { }
+                                                                                                            end(false){ }
 
 void CommandLineInterface::mainMenu() {
     std::vector<std::string> mainMenu;

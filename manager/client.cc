@@ -30,10 +30,6 @@
 #define IpV6 0
 // sockets
 std::vector<int> sockets;
-// typical resistance for socket
-std::vector<int> typical;
-// detectors id
-std::vector<int> ids;
 
 std::map<int, int> idTypical;
 
@@ -92,8 +88,6 @@ std::vector<int> findDetectors() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         socks.push_back(soc);
-        typical.push_back(defaultTypicalResistance);
-        ids.push_back(-1);
     }
     return socks;
 }
@@ -141,8 +135,6 @@ std::vector<int> findDetectorsIPv6() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         sockets.push_back(soc);
-        ids.push_back(-1);
-        typical.push_back(defaultTypicalResistance);
     }
     return sockets;
 }
@@ -169,11 +161,9 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
                 perror("reading stream message error");
                 FD_CLR(sockets[i],&readfds);
                 sockets[i]=-1;
-                ids[i] = -1;
             } else if (rval==0) {
                 printf("Ending connection\n");
             } else {
-                ids[i] = msg->id;
                 handler.handle(msg);
             }
             auto f = idTypical.find(msg->id);
@@ -236,7 +226,7 @@ int main(int argc, char *argv[])
 {
     MessageHandler handler;
     std::mutex m;
-    CommandLineInterface cli(&handler.getHistory(), &m, &typical);
+    CommandLineInterface cli(&handler.getHistory(), &m);
 
     /* Create http handler thread */
     std::thread httpHandler(httpHandlerStart, &handler, &cli);
