@@ -37,3 +37,13 @@ void DetectorHistory::clearHistory() {
     allRecords.clear();
     history.clear();
 }
+
+DetectorHistory::~DetectorHistory() {
+    for(auto &val:allRecords){
+        delete(val);
+    }
+
+    for(auto &val:history){
+        delete(val.second);
+    }
+}
