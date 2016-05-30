@@ -24,10 +24,25 @@
 #include "MessageHandler.h"
 #include "../http_module/HttpHandler.h"
 #include "cli/CommandLineInterface.h"
+#include <sstream>
+#include <iterator>
+#include <iomanip>
 #define IpV6 0
 
 std::vector<int> sockets;
 std::vector<int> typical;
+
+std::string changeFormatIPv6(int hexIP) {
+    std::stringstream stream;
+    stream << std::hex << hexIP;
+    std::string stringIPv6 = stream.str();
+
+    for(int i=stringIPv6.length(); i<4;i++)	{
+        stringIPv6 = "0" + stringIPv6;
+    }
+
+    return  stringIPv6;
+};
 
 std::vector<int> findDetectors() {
     struct hostent *hp;
@@ -38,7 +53,7 @@ std::vector<int> findDetectors() {
     std::vector<int> socks;
 
     for (int i = 1; i < 255; i++) {
-        char buf[39];
+        char buf[16];
         struct sockaddr_in serv;
         fd_set fds_connect;
         FD_ZERO (&fds_connect);
@@ -86,7 +101,7 @@ std::vector<int> findDetectorsIPv6() {
     std::vector<int> sockets;
 
     for (int i = 1; i < 65536; i++) {
-        char buf[128];
+        char buf[32];
         struct sockaddr_in6 serv;
         fd_set fds_connect;
         FD_ZERO (&fds_connect);
@@ -98,7 +113,7 @@ std::vector<int> findDetectorsIPv6() {
             continue;
         }
         serv.sin6_family = AF_INET6;
-        snprintf(buf, 128, "%s.%d", eRuraSubnetIpv6, i);
+        snprintf(buf, 39, "%s.%s", eRuraSubnetIpv6, changeFormatIPv6(i).c_str());
         hp = gethostbyname2 (buf, AF_INET6);
         if (hp == 0) {
             close(soc);
