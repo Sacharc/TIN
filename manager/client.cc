@@ -27,6 +27,7 @@
 #define IpV6 0
 
 std::vector<int> sockets;
+std::vector<int> typical;
 
 std::vector<int> findDetectors() {
     struct hostent *hp;
@@ -71,6 +72,7 @@ std::vector<int> findDetectors() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         socks.push_back(soc);
+        typical.push_back(defaultTypicalResistance);
     }
     return socks;
 }
@@ -82,8 +84,6 @@ std::vector<int> findDetectorsIPv6() {
     times.tv_usec=10000;
 
     std::vector<int> sockets;
-    //  TODO wydaje mi sie ze nie potrzebne do przetestowania
-    std::vector<struct sockaddr_in6> servs;
 
     for (int i = 1; i < 65536; i++) {
         char buf[128];
@@ -98,7 +98,7 @@ std::vector<int> findDetectorsIPv6() {
             continue;
         }
         serv.sin6_family = AF_INET6;
-        snprintf(buf, 16, "%s.%d", eRuraSubnetIpv6, i);
+        snprintf(buf, 128, "%s.%d", eRuraSubnetIpv6, i);
         hp = gethostbyname2 (buf, AF_INET6);
         if (hp == 0) {
             close(soc);
@@ -120,7 +120,7 @@ std::vector<int> findDetectorsIPv6() {
         }
         printf("Successfully connected to: %s\n",hp->h_name);
         sockets.push_back(soc);
-        servs.push_back(serv);
+        typical.push_back(defaultTypicalResistance);
     }
     return sockets;
 }
@@ -136,6 +136,8 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
     select(FD_SETSIZE, &readfds,NULL,NULL,NULL);
     for (unsigned i = 0; i < sockets.size(); i++) {
         if(sockets[i] != -1 && FD_ISSET(sockets[i], &readfds)) {
+            int err;
+            msg =(struct message*)  malloc(sizeof(struct message));
             int rval = recv(sockets[i], msg, sizeof(struct message), 0);
             if (rval < 0 ) {
                 perror("reading stream message error");
@@ -146,8 +148,19 @@ void checkAllDetectors(MessageHandler &handler, fd_set &readfds) {
             } else {
                 handler.handle(msg);
             }
+
+            msg->id = 0;
+            msg->msg_type = CHANGE_TYPICAL_RESISTANCE;
+            msg->currentResistance = 0;
+            msg->typicalResistance = typical[i];
+            err = send(sockets[i], msg, sizeof(struct message), MSG_NOSIGNAL);
+            if( err < 0) {
+                perror("Sending raport failed");
+            }
+
         }
     }
+    free(msg);
 }
 
 fd_set setFlags() {
@@ -191,7 +204,7 @@ int main(int argc, char *argv[])
 {
     MessageHandler handler;
     std::mutex m;
-    CommandLineInterface cli(&handler.getHistory(), &m);
+    CommandLineInterface cli(&handler.getHistory(), &m, &typical);
 
     /* Create http handler thread */
     std::thread httpHandler(httpHandlerStart, &handler, &cli);

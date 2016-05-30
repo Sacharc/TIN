@@ -18,14 +18,15 @@ private:
     DetectorHistory* history;
     std::mutex* m;
     bool end;
+    std::vector<int>* typical;
 public:
-    CommandLineInterface(DetectorHistory* hist, std::mutex* mut);
+    CommandLineInterface(DetectorHistory* hist, std::mutex* mut, std::vector<int>* typ);
     bool isEnd();
     void mainMenu();
 private:
     void displayDetectorList();
     void displayStatistics();
-    bool chooseDetector(int &value);
+    bool chooseDetector(unsigned &value);
     void displayHistory(bool alarmsOnly);
     void clearHistory();
     void findDetectors();

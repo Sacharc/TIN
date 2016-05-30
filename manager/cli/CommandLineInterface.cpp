@@ -6,7 +6,10 @@
 
 void scanNetwork(std::mutex* m);
 
-CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut) : history(hist), m(mut), end(false) { }
+CommandLineInterface::CommandLineInterface(DetectorHistory *hist, std::mutex* mut, std::vector<int>* typ) : history(hist),
+                                                                                                            m(mut),
+                                                                                                            end(false),
+                                                                                                            typical(typ) { }
 
 void CommandLineInterface::mainMenu() {
     std::vector<std::string> mainMenu;
@@ -64,8 +67,8 @@ void CommandLineInterface::mainMenu() {
 
 void CommandLineInterface::displayDetectorList() {
     auto vec = history->getDetectorIds();
-    for(auto const &v : vec) {
-        std::cout<<v<<std::endl;
+    for(unsigned i = 0; i< vec.size(); ++i) {
+        std::cout<<i<<". "<<vec[i]<<std::endl;
     }
 }
 
@@ -99,27 +102,40 @@ void CommandLineInterface::clearHistory() {
     history->clearHistory();
 }
 
-bool CommandLineInterface::chooseDetector(int &value) {
+bool CommandLineInterface::chooseDetector(unsigned &value) {
     std::cout << "Lista czujnikow" <<std::endl;
     displayDetectorList();
 
-    int val = 0;
+    unsigned val = 0;
     std::cin >> val;
     if (std::cin.fail()) {
         std::cin.clear();
         std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
         return false;
-    } else {
-        auto vec = history->getDetectorIds();
-        if (std::find(vec.begin(), vec.end(), val) != vec.end()) {
-            value = val;
-            return true;
-        }
     }
-    return false;
+
+    auto vec = history->getDetectorIds();
+    value = val;
+    return (val >= 0 && val < vec.size());
 }
 
 void CommandLineInterface::changeTypicalResistance() {
+    std::cout <<"Wybierz czujke: " << std::endl;
+    unsigned value;
+    if(chooseDetector(value)) {
+        int resistance;
+        std::cout << "Podaj rezystancje: " << std::endl;
+        std::cin >> resistance;
+        if (std::cin.fail()) {
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            std::cout << "Wystapil blad: " << std::endl;
+            return;
+        }
+        typical->at(value) = resistance;
+    } else {
+        std::cout <<"Wystapil blad: " << std::endl;
+    }
 
 }
 
