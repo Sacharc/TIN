@@ -22,24 +22,20 @@ function tin_proto.dissector (buf, pkt, root)
             subtree:add(buf(8,4), "ALARM. Message type: " .. buf(8,4):le_uint())
         else
             if (reportType == 2) then
-                subtree:add(buf(8,4), "INIT. Message type: " .. buf(8,4):le_uint())
+                subtree:add(buf(8,4), "INFINITY RESISTANCE. Message type: " .. buf(8,4):le_uint())
             else
                 if (reportType == 3) then
-                    subtree:add(buf(8,4), "CALL ALARM. Message type: " .. buf(8,4):le_uint())
+                    subtree:add(buf(8,4), "CHANGE TYPICAL RESISTANCE. Message type: " .. buf(8,4):le_uint())
                 else
                     if (reportType == 4) then
-                        subtree:add(buf(8,4), "GET CURRENT VALUE. Message type: " .. buf(8,4):le_uint())
-                    else
-                        if (reportType == 4) then
-                            subtree:add(buf(8,4), "SET ALARM VALUE. Message type: " .. buf(8,4):le_uint())
-                        end
+                        subtree:add(buf(8,4), "CHECK STATE. Message type: " .. buf(8,4):le_uint())
                     end
                 end
             end
         end
     end
-    subtree:add(buf(12,4), "Water level: " .. buf(12,4):le_uint())
-    subtree:add(buf(16,4), "Safe level: " .. buf(16,4):le_uint())
+    subtree:add(buf(12,4), "Resistance : " .. buf(12,4):le_uint())
+    subtree:add(buf(16,4), "Typical resistance : " .. buf(16,4):le_uint())
 
     subtree:append_text(", Packet details below")
 end
