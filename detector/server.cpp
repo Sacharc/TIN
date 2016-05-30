@@ -41,7 +41,7 @@ int detector_send(int sock, int type)
 	}
 	const char* name = type == ALARM ? "Alarm" : "Raport";
 
-	printf("%s Sent: id: %ld, type: %d, current resistance: %d, typical eesistance: %d\n", name,
+	printf("%s Sent: id: %ld, type: %d, current resistance: %d, typical resistance: %d\n", name,
            msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
     free(msg);
 	return 0;
@@ -114,17 +114,17 @@ void mainLoop() {
 
 int main(int argc, char *argv[])
 {
-	if(argc<2)
+	if(argc<3)
 	{
-		printf("Usage:\n ./DETECTOR <DETECTOR_ID>\n");
+		printf("Usage:\n ./DETECTOR <DETECTOR_ID> <TYPICAL>\n");
 		return 0;
 	}
 
 	srand(time(NULL));
 	detector_id = atoi (argv[1]);
 
-    typicalResistance = defaultTypicalResistance;
-    currentResistance = defaultTypicalResistance;
+    typicalResistance = atoi(argv[2]);
+    currentResistance = typicalResistance;
 
     createSockets();
 
