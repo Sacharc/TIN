@@ -1,10 +1,13 @@
+#W celu zbudowania plikow testowych odkomentowac wykomentowane linie oraz linie numer 9
+
 cmake_minimum_required(VERSION 2.8)
 project(TIN)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${Project_SOURCE_DIR})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread -lgtest")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -std=c++11 -pthread -lgtest")
 
 set(DETECTOR_SOURCE_FILES
         detector/server.cpp
