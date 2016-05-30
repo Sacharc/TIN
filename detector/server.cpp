@@ -21,6 +21,8 @@ int water_level;
 
 int detector_send(int sock, int type)
 {
+
+
 	struct message *msg;
 	int err;
 	msg =(struct message*)  malloc(sizeof(struct message));
@@ -35,9 +37,25 @@ int detector_send(int sock, int type)
 	}
 	const char* name = type == ALARM ? "Alarm" : "Raport";
 
-	printf("%s sent: id: %ld, type: %d, water level: %d, safe_level: %d\n", name,
+	printf("%s Sent: id: %ld, type: %d, water level: %d, safe_level: %d\n", name,
 	msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
-	free(msg);
+
+    int rval = recv(sock, msg, sizeof(struct message), 0);
+    if (rval < 0 ) {
+        perror("reading stream message error");
+    } else if (rval==0) {
+        printf("Ending connection\n");
+    }
+
+    if(msg->msg_type == CHANGE_TYPICAL_RESISTANCE) {
+        safe_level = msg->typicalResistance;
+    }
+
+    printf("Received: id: %ld, type: %d, water level: %d, safe_level: %d\n",
+           msg->id, msg->msg_type, msg->currentResistance, msg->typicalResistance);
+
+
+    free(msg);
 	return 0;
 }
 
