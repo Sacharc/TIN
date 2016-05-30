@@ -4,6 +4,6 @@
 
 cd ..
 cd BUILD
-./DETECTOR 1 << EOF
+./DETECTOR 1 3000 << EOF
 999999999
 EOF

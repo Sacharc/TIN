@@ -3,4 +3,4 @@
 
 cd ..
 cd BUILD
-./DETECTOR 1
+./DETECTOR 1 3000
