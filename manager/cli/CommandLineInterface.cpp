@@ -85,7 +85,7 @@ void CommandLineInterface::displayHistory(bool alarmsOnly) {
 
         std::cout << time
                 <<"\t ID" << vec->at(i)->getMessage().id
-                <<"\t type" << type
+                <<"\t type " << type
                 <<"\t current: " << currentResistence
                 <<"\t typical: " << typicalResistance << std::endl;
     }

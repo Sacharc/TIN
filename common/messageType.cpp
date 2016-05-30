@@ -11,7 +11,7 @@ const char* messageTypeToString(int type) {
         case ALARM:
             return "Alarm";
         case INFINITY_RESISTANCE:
-            return "Infinity resistance";
+            return "Infinity";
         case CHANGE_TYPICAL_RESISTANCE:
             return "Change typical resistance";
         case CHECK_STATE:
